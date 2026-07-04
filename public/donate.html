@@ -6,6 +6,20 @@
   <title>Donate — Taste Manna</title>
   <link rel="icon" href="/assets/logo-64.png" type="image/png" />
   <link rel="stylesheet" href="/styles.css">
+  <style>
+    .cs-wrap { max-width: 560px; margin: 0 auto; padding: 100px 20px 120px; text-align: center; }
+    .cs-badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--gold); background: rgba(201,161,74,.12); border: 1px solid rgba(201,161,74,.25); padding: 6px 14px; border-radius: 999px; margin-bottom: 24px; }
+    .cs-title { font-size: 30px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 14px; line-height: 1.2; }
+    .cs-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 36px; max-width: 440px; margin-left: auto; margin-right: auto; }
+    .cs-card { background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); border: 1px solid var(--glass-border); border-radius: 22px; padding: 30px 26px; margin-bottom: 24px; text-align: left; }
+    .cs-card-head { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--gold); margin-bottom: 18px; }
+    .cs-item { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; font-size: 13.5px; color: var(--ink); line-height: 1.5; }
+    .cs-item:last-child { margin-bottom: 0; }
+    .cs-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); flex-shrink: 0; margin-top: 7px; }
+    .cs-verse { font-family: var(--serif); font-size: 17px; line-height: 1.6; color: var(--ink); opacity: .9; font-style: italic; margin-bottom: 8px; }
+    .cs-verse-ref { font-size: 12px; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+    .cs-cta { display: inline-block; background: var(--gold); color: #2a1d05; padding: 13px 32px; border-radius: 12px; font-weight: 800; font-size: 15px; text-decoration: none; }
+  </style>
 </head>
 <body class="page-scroll">
   <div class="ambient">
@@ -32,41 +46,28 @@
     </div>
   </div>
 
-  <div class="container main-with-nav" style="padding-top: 80px; max-width: 600px; margin: 0 auto;">
-    <div style="text-align: center; margin-bottom: 40px;">
-      <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 12px;">Support Taste Manna</h1>
-      <p style="color: var(--muted); font-size: 14px;">Help us reach more people with Scripture discovery</p>
+  <div class="cs-wrap">
+    <div class="cs-badge">Coming soon</div>
+    <h1 class="cs-title">Donations are on the way</h1>
+    <p class="cs-sub">We're not accepting donations just yet. Right now our focus is simple: build something worth supporting and keep every feature free while we're in beta. When the time is right, we'll open a way to give.</p>
+
+    <div class="cs-card">
+      <div class="cs-card-head">When it opens, every gift will</div>
+      <div class="cs-item"><div class="cs-dot"></div><div>Help expand our Scripture database</div></div>
+      <div class="cs-item"><div class="cs-dot"></div><div>Fund new features for Bible discovery</div></div>
+      <div class="cs-item"><div class="cs-dot"></div><div>Support our community moderators</div></div>
+      <div class="cs-item"><div class="cs-dot"></div><div>Keep Taste Manna free for everyone</div></div>
+      <div class="cs-item"><div class="cs-dot"></div><div>Support missionaries around the world</div></div>
     </div>
 
-    <div style="background: linear-gradient(135deg, rgba(102,126,234,.1), rgba(118,75,162,.1)); border: 1px solid rgba(201,161,74,.2); border-radius: 16px; padding: 24px; margin-bottom: 20px;">
-      <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Choose an amount</h2>
-
-      <div id="amountButtons" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;"></div>
-
-      <div style="margin-bottom: 16px;">
-        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px;">Custom amount ($)</label>
-        <input type="number" id="customAmount" min="1" max="10000" value="" placeholder="e.g., 25" style="width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: var(--ink); font-size: 14px; outline: none;">
-      </div>
-
-      <div style="margin-bottom: 16px;">
-        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px;">Message (optional)</label>
-        <textarea id="donationMessage" placeholder="Why are you supporting us?" maxlength="200" style="width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: var(--ink); font-size: 14px; resize: vertical; height: 80px; outline: none; font-family: inherit;"></textarea>
-      </div>
-
-      <button id="donateBtn" class="cm-mini cm-mini--primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 600;">Donate</button>
+    <div class="cs-card" style="text-align:center;">
+      <div class="cs-verse">"Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver."</div>
+      <div class="cs-verse-ref">2 Corinthians 9:7</div>
     </div>
 
-    <div style="background: rgba(255,255,255,.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px; font-size: 13px; line-height: 1.5; color: var(--muted);">
-      <strong style="color: var(--ink);">💡 Every donation:</strong><br>
-      • Helps expand our Scripture database<br>
-      • Enables new features for Bible discovery<br>
-      • Supports our community moderators<br>
-      • Makes Taste Manna free for everyone<br>
-      • Supports our missionaries!
-    </div>
+    <a href="/index.html" class="cs-cta">Back to reading</a>
   </div>
 
-  <!-- Bottom nav -->
   <nav class="bottom-nav">
     <a href="/index.html" class="bottom-nav-item"><div class="bottom-nav-label">For You</div></a>
     <a href="/home.html" class="bottom-nav-item"><div class="bottom-nav-label">Home</div></a>
@@ -79,82 +80,7 @@
 
   <script type="module">
     import { initPageAccount } from "/src/core/pageAccount.js";
-    const pageAccount = initPageAccount(document.getElementById('accountBtn'));
-
-    const amounts = [5, 10, 25, 50, 100, 250];
-    const buttonsContainer = document.getElementById("amountButtons");
-    let selected = null;
-
-    amounts.forEach(amt => {
-      const btn = document.createElement("button");
-      btn.textContent = `$${amt}`;
-      btn.style.cssText = "background: rgba(255,255,255,.04); border: 1px solid var(--glass-border); color: var(--muted); padding: 12px; border-radius: 8px; cursor: pointer; transition: all .2s; font-weight: 600;";
-      btn.addEventListener("click", () => {
-        document.querySelectorAll("#amountButtons button").forEach(b => {
-          b.style.background = "rgba(255,255,255,.04)";
-          b.style.borderColor = "var(--glass-border)";
-          b.style.color = "var(--muted)";
-        });
-        btn.style.background = "var(--gold)";
-        btn.style.borderColor = "var(--gold)";
-        btn.style.color = "#2a1d05";
-        selected = amt;
-        document.getElementById("customAmount").value = "";
-      });
-      buttonsContainer.appendChild(btn);
-    });
-
-    document.getElementById("customAmount").addEventListener("change", (e) => {
-      if (e.target.value) {
-        document.querySelectorAll("#amountButtons button").forEach(b => {
-          b.style.background = "rgba(255,255,255,.04)";
-          b.style.borderColor = "var(--glass-border)";
-          b.style.color = "var(--muted)";
-        });
-        selected = null;
-      }
-    });
-
-    document.getElementById("donateBtn").addEventListener("click", async () => {
-      const amount = selected || parseFloat(document.getElementById("customAmount").value);
-      if (!amount || amount < 1) {
-        alert("Please select or enter a valid amount");
-        return;
-      }
-
-      const session = (await pageAccount)?.getSession();
-      if (!session?.user) {
-        const { openAuthPanel } = await import("/src/ui/components/welcome.js");
-        openAuthPanel({ mode: "login", dismissible: true });
-        return;
-      }
-
-      const message = document.getElementById("donationMessage").value;
-      const btn = document.getElementById("donateBtn");
-      btn.disabled = true;
-      btn.textContent = "Processing…";
-
-      try {
-        const res = await fetch("/api/donations/create-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "same-origin",
-          body: JSON.stringify({ amount, message }),
-        });
-        const data = await res.json();
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          alert("Failed to create donation session");
-          btn.disabled = false;
-          btn.textContent = "Donate";
-        }
-      } catch (err) {
-        alert("Error: " + err.message);
-        btn.disabled = false;
-        btn.textContent = "Donate";
-      }
-    });
+    initPageAccount(document.getElementById("accountBtn"));
   </script>
 </body>
 </html>

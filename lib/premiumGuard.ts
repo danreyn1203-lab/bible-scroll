@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { auth } from "../auth";
-import { prisma } from "./prisma";
 
 export type PremiumGuardResult =
   | { ok: true; userId: string }
   | { ok: false; response: NextResponse };
 
-// Gate any route to premium subscribers only.
+// Gate any route to signed-in users.
+//
+// LAUNCH NOTE: Taste Manna is free during beta — there is no paywall.
+// This guard now only checks that the user is signed in. The premium /
+// subscription logic is intentionally left dormant (not deleted) so it can
+// be switched back on later by restoring the isPremium/role check.
 // Usage: const guard = await requirePremium(); if (!guard.ok) return guard.response;
 export async function requirePremium(): Promise<PremiumGuardResult> {
   const session = await auth();
@@ -20,21 +24,6 @@ export async function requirePremium(): Promise<PremiumGuardResult> {
     };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { id: true, isPremium: true, role: true },
-  });
-
-  // Admins and moderators always get premium access
-  if (!user || (!user.isPremium && user.role === "user")) {
-    return {
-      ok: false,
-      response: NextResponse.json(
-        { error: "Premium membership required", code: "premium_required" },
-        { status: 403 }
-      ),
-    };
-  }
-
-  return { ok: true, userId: user.id };
+  // Free during beta: every signed-in user gets full access.
+  return { ok: true, userId: session.user.id };
 }

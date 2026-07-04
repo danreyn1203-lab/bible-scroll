@@ -137,9 +137,8 @@ export async function openExplorePanel(contentId, onJump) {
           aiOutput.innerHTML = `
             <div style="text-align:center;padding:8px 0">
               <div style="font-size:28px;margin-bottom:10px">✦</div>
-              <div style="font-weight:700;font-size:14px;color:var(--ink);margin-bottom:6px">Premium feature</div>
-              <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5">AI Chat, Devotionals, Quizzes and Study Plans are included in Taste Manna Premium.</div>
-              <a href="/upgrade.html" style="display:inline-block;background:var(--gold);color:#2a1d05;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">Upgrade — $4.99/mo</a>
+              <div style="font-weight:700;font-size:14px;color:var(--ink);margin-bottom:6px">Sign in to continue</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5">AI Chat, Devotionals, Quizzes and Study Plans are free — just sign in to use them.</div>
             </div>`;
         } else {
           aiOutput.textContent = "AI unavailable — check your OpenAI API key and billing.";
