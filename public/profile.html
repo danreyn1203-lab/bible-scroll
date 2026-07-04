@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Profile — Taste Manna</title>
+  <link rel="icon" href="/assets/logo-64.png" type="image/png" />
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* ── Page shell ── */
+    .prof-page { min-height: 100vh; position: relative; z-index: 1; padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+
+    /* ── Hero banner ── */
+    .prof-hero {
+      height: 180px;
+      background: linear-gradient(135deg, #1a0e2e 0%, #0d2233 40%, #1a1505 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .prof-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 120% at 20% 50%, rgba(201,161,74,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 100% at 80% 30%, rgba(91,83,184,.22) 0%, transparent 55%);
+    }
+    .prof-hero-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: .06;
+      background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,.08) 0px, rgba(255,255,255,.08) 1px,
+        transparent 1px, transparent 24px
+      );
+    }
+
+    /* ── Avatar overlapping hero ── */
+    .prof-identity-block {
+      padding: 0 20px 0;
+      position: relative;
+    }
+    .prof-avatar-ring {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), #c4862a);
+      padding: 3px;
+      margin-top: -48px;
+      position: relative;
+      display: inline-block;
+    }
+    .prof-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #0f0b18;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--gold);
+      overflow: hidden;
+      border: 3px solid #0f0b18;
+    }
+    .prof-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .prof-avatar-change-btn {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 2px solid #0f0b18;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .prof-avatar-change-btn svg { width: 13px; height: 13px; fill: #2a1d05; }
+
+    /* ── Header row (avatar + edit button side by side) ── */
+    .prof-header-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .prof-header-actions { display: flex; gap: 8px; padding-bottom: 4px; }
+    .prof-edit-btn {
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 1.5px solid rgba(255,255,255,.3);
+      background: transparent;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .prof-edit-btn:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.5); }
+    .prof-share-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,.3);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+    }
+    .prof-share-btn:hover { background: rgba(255,255,255,.08); }
+    .prof-share-btn svg { width: 16px; height: 16px; fill: var(--ink); }
+
+    /* ── Name / meta ── */
+    .prof-name { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -.3px; margin-bottom: 3px; }
+    .prof-meta { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; }
+    .prof-bio { font-size: 14px; color: var(--ink); line-height: 1.6; opacity: .88; margin-bottom: 18px; max-width: 380px; }
+    .prof-bio-placeholder { font-size: 14px; color: var(--muted); font-style: italic; margin-bottom: 18px; cursor: pointer; }
+    .prof-bio-placeholder:hover { color: var(--gold); }
+
+    /* ── Stats bar ── */
+    .prof-stats {
+      display: flex;
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      margin: 0 -20px 20px;
+      padding: 0 20px;
+    }
+    .prof-stat {
+      flex: 1;
+      padding: 14px 0;
+      text-align: center;
+      position: relative;
+    }
+    .prof-stat + .prof-stat::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 20%;
+      height: 60%;
+      width: 1px;
+      background: var(--glass-border);
+    }
+    .prof-stat-value { font-size: 20px; font-weight: 800; color: var(--gold); line-height: 1; margin-bottom: 3px; }
+    .prof-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); font-weight: 600; }
+
+    /* ── Completeness nudge ── */
+    .prof-nudge {
+      margin: 20px 20px 0;
+      background: linear-gradient(135deg, rgba(201,161,74,.1), rgba(91,83,184,.08));
+      border: 1px solid rgba(201,161,74,.25);
+      border-radius: 16px;
+      padding: 16px 18px;
+    }
+    .prof-nudge-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .prof-nudge-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(201,161,74,.15); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .prof-nudge-head h3 { font-size: 14px; font-weight: 700; color: var(--ink); }
+    .prof-nudge-head p { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .prof-nudge-progress { height: 4px; background: rgba(255,255,255,.08); border-radius: 99px; margin-bottom: 12px; overflow: hidden; }
+    .prof-nudge-bar { height: 100%; background: linear-gradient(90deg, var(--gold), #c4862a); border-radius: 99px; transition: width .5s var(--ease); }
+    .prof-nudge-steps { display: flex; flex-direction: column; gap: 8px; }
+    .prof-nudge-step { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .prof-nudge-check { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; }
+    .prof-nudge-check.done { background: rgba(201,161,74,.2); color: var(--gold); }
+    .prof-nudge-check.todo { background: rgba(255,255,255,.06); color: var(--muted); border: 1px solid var(--glass-border); }
+    .prof-nudge-step.is-done .prof-nudge-step-label { color: var(--muted); text-decoration: line-through; opacity: .6; }
+    .prof-nudge-step-label { color: var(--ink); }
+    .prof-nudge-cta { margin-top: 14px; width: 100%; padding: 10px; background: var(--gold); border: none; border-radius: 10px; color: #2a1d05; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+    /* ── Leaderboard card ── */
+    .prof-section {
+      margin: 20px 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 20px;
+    }
+    .prof-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .prof-lb-row { display: flex; gap: 10px; }
+    .prof-lb-stat { flex: 1; background: rgba(255,255,255,.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px 10px; text-align: center; }
+    .prof-lb-value { font-size: 20px; font-weight: 800; color: var(--gold); }
+    .prof-lb-label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-top: 2px; font-weight: 600; }
+
+    /* ── Edit modal ── */
+    .prof-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9100;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+    }
+    .prof-modal-overlay.open { opacity: 1; pointer-events: all; }
+    @media (min-width: 600px) {
+      .prof-modal-overlay { align-items: center; }
+    }
+    .prof-modal {
+      width: 100%;
+      max-width: 500px;
+      max-height: 92vh;
+      background: #0f0c18;
+      border: 1px solid var(--glass-border);
+      border-radius: 24px 24px 0 0;
+      overflow-y: auto;
+      transform: translateY(40px);
+      transition: transform .3s var(--ease);
+    }
+    @media (min-width: 600px) {
+      .prof-modal { border-radius: 24px; max-height: 85vh; }
+    }
+    .prof-modal-overlay.open .prof-modal { transform: translateY(0); }
+
+    .prof-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--glass-border);
+      position: sticky;
+      top: 0;
+      background: #0f0c18;
+      z-index: 1;
+    }
+    .prof-modal-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+    .prof-modal-save {
+      padding: 8px 20px;
+      background: var(--gold);
+      border: none;
+      border-radius: 20px;
+      color: #2a1d05;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .prof-modal-save:disabled { opacity: .45; cursor: not-allowed; }
+    .prof-modal-close {
+      background: rgba(255,255,255,.08);
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .prof-modal-body { padding: 24px 20px; }
+
+    /* Avatar upload in modal */
+    .prof-modal-avatar-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .prof-modal-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: rgba(201,161,74,.12);
+      border: 2px solid rgba(201,161,74,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--gold);
+      overflow: hidden;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .prof-modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .prof-modal-avatar-btn {
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 18px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .prof-modal-avatar-btn input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      font-size: 0;
+    }
+    .prof-modal-avatar-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+    /* Form fields */
+    .prof-field { margin-bottom: 20px; }
+    .prof-field-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 8px; display: block; }
+    .prof-field input, .prof-field textarea {
+      width: 100%;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--ink);
+      font-size: 15px;
+      outline: none;
+      font-family: inherit;
+      box-sizing: border-box;
+      transition: border-color .2s, background .2s;
+    }
+    .prof-field textarea { resize: none; min-height: 90px; }
+    .prof-field input:focus, .prof-field textarea:focus { border-color: var(--gold); background: rgba(255,255,255,.08); }
+    .prof-field-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+    .prof-field-hint { font-size: 11px; color: var(--muted); }
+    .prof-field-count { font-size: 11px; color: var(--muted); }
+    .prof-modal-error { color: #ff8a8a; font-size: 13px; margin-top: 8px; display: none; }
+
+    /* ── Skeleton ── */
+    .prof-skel { background: rgba(255,255,255,.06); border-radius: 8px; animation: skelShim 1.4s infinite; }
+    @keyframes skelShim { 0%,100%{opacity:.35} 50%{opacity:.75} }
+
+    /* ── Empty / error ── */
+    .prof-empty { text-align: center; padding: 80px 24px; color: var(--muted); font-size: 15px; }
+    .prof-empty-icon { font-size: 40px; margin-bottom: 14px; opacity: .5; }
+
+    /* ── Toast ── */
+    .prof-toast {
+      position: fixed;
+      bottom: calc(80px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: rgba(201,161,74,.95);
+      color: #2a1d05;
+      padding: 10px 22px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s, transform .2s;
+    }
+    .prof-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* hide page-nav on ≤768px — it's already handled globally but reinforce here */
+    @media (max-width: 768px) { .page-nav { display: none; } }
+  </style>
+</head>
+<body class="page-scroll">
+  <div class="ambient">
+    <div class="ambient-blob ambient-blob--a"></div>
+    <div class="ambient-blob ambient-blob--b"></div>
+    <div class="ambient-blob ambient-blob--c"></div>
+    <div class="ambient-grain"></div>
+  </div>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="brand">
+      <img class="logo" src="/logo.png" alt="Taste Manna" width="32" height="32" />
+      <span>Taste Manna</span>
+    </div>
+    <nav class="page-nav">
+      <a href="/index.html" class="page-nav-link">For You</a>
+      <a href="/home.html" class="page-nav-link">Home</a>
+      <a href="/leaderboard.html" class="page-nav-link">Leaderboard</a>
+      <a href="/upgrade.html" class="page-nav-link">Premium</a>
+      <a href="/donate.html" class="page-nav-link">Donate</a>
+    </nav>
+    <div class="topbar-right">
+      <button class="account-btn" id="accountBtn"></button>
+    </div>
+  </div>
+
+  <!-- Profile page body -->
+  <div class="prof-page" id="profPage">
+    <!-- Skeleton while loading -->
+    <div id="profSkeleton">
+      <div class="prof-hero"></div>
+      <div class="prof-identity-block" style="padding:0 20px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px">
+          <div class="prof-skel" style="width:96px;height:96px;border-radius:50%;margin-top:-48px;border:3px solid #0f0b18"></div>
+        </div>
+        <div class="prof-skel" style="width:55%;height:26px;margin-bottom:8px"></div>
+        <div class="prof-skel" style="width:35%;height:14px;margin-bottom:20px"></div>
+        <div class="prof-skel" style="width:75%;height:14px;margin-bottom:6px"></div>
+        <div class="prof-skel" style="width:60%;height:14px;margin-bottom:20px"></div>
+      </div>
+    </div>
+
+    <!-- Populated content -->
+    <div id="profContent" style="display:none"></div>
+  </div>
+
+  <!-- Edit modal -->
+  <div class="prof-modal-overlay" id="editModalOverlay">
+    <div class="prof-modal" id="editModal">
+      <div class="prof-modal-header">
+        <button class="prof-modal-close" id="modalCloseBtn">✕</button>
+        <div class="prof-modal-title">Edit profile</div>
+        <button class="prof-modal-save" id="modalSaveBtn">Save</button>
+      </div>
+      <div class="prof-modal-body">
+        <div class="prof-modal-avatar-zone">
+          <div class="prof-modal-avatar" id="modalAvatar"></div>
+          <label class="prof-modal-avatar-btn">
+            Change photo
+            <input type="file" id="modalAvatarInput" accept="image/*" />
+          </label>
+          <div class="prof-modal-avatar-note">JPG or PNG · max 500 KB</div>
+        </div>
+
+        <div class="prof-field">
+          <label class="prof-field-label" for="modalName">Display name</label>
+          <input type="text" id="modalName" maxlength="60" placeholder="Your name" autocomplete="off" />
+        </div>
+
+        <div class="prof-field">
+          <label class="prof-field-label" for="modalBio">Bio</label>
+          <textarea id="modalBio" maxlength="280" placeholder="Share a little about your faith journey…"></textarea>
+          <div class="prof-field-footer">
+            <span class="prof-field-hint">Shown on your public profile</span>
+            <span class="prof-field-count"><span id="bioCharCount">0</span>/280</span>
+          </div>
+        </div>
+
+        <div class="prof-modal-error" id="modalError"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="prof-toast" id="profToast"></div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <a href="/index.html" class="bottom-nav-item"><div class="bottom-nav-label">For You</div></a>
+    <a href="/home.html" class="bottom-nav-item"><div class="bottom-nav-label">Home</div></a>
+    <a href="/leaderboard.html" class="bottom-nav-item"><div class="bottom-nav-label">Leaderboard</div></a>
+    <a href="/upgrade.html" class="bottom-nav-item"><div class="bottom-nav-label">Premium</div></a>
+    <a href="/donate.html" class="bottom-nav-item"><div class="bottom-nav-label">Donate</div></a>
+  </nav>
+
+  <div id="welcome"></div>
+
+  <script type="module">
+    import { initPageAccount } from "/src/core/pageAccount.js";
+
+    const pageAccount = await initPageAccount(document.getElementById("accountBtn"));
+    const session = pageAccount?.getSession?.() ?? null;
+    const meId = session?.user?.id ?? null;
+
+    const userId = new URLSearchParams(window.location.search).get("id");
+    const isOwn = !!(meId && meId === userId);
+
+    const skeleton = document.getElementById("profSkeleton");
+    const profContent = document.getElementById("profContent");
+
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, c =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
+      );
+    }
+
+    function toast(msg) {
+      const t = document.getElementById("profToast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2400);
+    }
+
+    if (!userId) {
+      skeleton.style.display = "none";
+      profContent.style.display = "block";
+      profContent.innerHTML = `<div class="prof-empty"><div class="prof-empty-icon">🔍</div>No profile ID specified.</div>`;
+    } else {
+      renderProfile();
+    }
+
+    let currentUser = null;
+    let pendingAvatar = null;
+
+    async function renderProfile() {
+      const user = await fetch(`/api/users/${userId}`)
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null);
+
+      skeleton.style.display = "none";
+      profContent.style.display = "block";
+
+      if (!user) {
+        profContent.innerHTML = `<div class="prof-empty"><div class="prof-empty-icon">👤</div>This profile doesn't exist or has been removed.</div>`;
+        return;
+      }
+
+      currentUser = user;
+      document.title = `${user.displayName || "Profile"} — Taste Manna`;
+      paintProfile(user);
+
+      // Leaderboard in background
+      fetch(`/api/leaderboard?type=integrity&limit=200`)
+        .then(r => r.json())
+        .then(lb => {
+          const entry = Array.isArray(lb) ? lb.find(e => e.id === userId) : null;
+          if (!entry) return;
+          const cell = document.getElementById("integrityCell");
+          if (cell) {
+            cell.querySelector(".prof-stat-value").textContent = (entry.integrityScore || 0).toLocaleString();
+          }
+          const lbSection = document.getElementById("lbSection");
+          if (lbSection && (entry.totalXP || entry.streakDays || entry.level)) {
+            lbSection.style.display = "block";
+            const row = lbSection.querySelector(".prof-lb-row");
+            row.innerHTML = [
+              entry.totalXP     ? `<div class="prof-lb-stat"><div class="prof-lb-value">${entry.totalXP.toLocaleString()}</div><div class="prof-lb-label">XP</div></div>` : "",
+              entry.streakDays  ? `<div class="prof-lb-stat"><div class="prof-lb-value">${entry.streakDays}</div><div class="prof-lb-label">Day Streak</div></div>` : "",
+              entry.level       ? `<div class="prof-lb-stat"><div class="prof-lb-value">${entry.level}</div><div class="prof-lb-label">Level</div></div>` : "",
+            ].join("");
+          }
+        })
+        .catch(() => {});
+    }
+
+    function paintProfile(user) {
+      const initial = (user.displayName || "?")[0].toUpperCase();
+      const avatarHtml = user.avatarUrl
+        ? `<img src="${esc(user.avatarUrl)}" alt="" />`
+        : initial;
+
+      const joined = new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+
+      const changePencil = isOwn ? `
+        <button class="prof-avatar-change-btn" id="avatarPencilBtn" title="Change photo">
+          <svg viewBox="0 0 13 13"><path d="M9.5 1a1.5 1.5 0 0 1 2.12 2.12L10.5 4.25l-2.13-2.13L9.5 1zM7.75 2.75 1.5 9v2.5h2.5l6.25-6.25L7.75 2.75z"/></svg>
+        </button>` : "";
+
+      const ownActions = isOwn ? `
+        <div class="prof-header-actions">
+          <button class="prof-edit-btn" id="editBtn">Edit profile</button>
+          <button class="prof-share-btn" id="shareBtn" title="Share profile">
+            <svg viewBox="0 0 18 18"><path d="M13 12.4a2.5 2.5 0 0 0-1.67.65L6.6 10.3a2.5 2.5 0 0 0 0-2.6l4.73-2.75A2.5 2.5 0 1 0 10.5 3a2.5 2.5 0 0 0 .33 1.24L6.1 6.98A2.5 2.5 0 1 0 6.1 11l4.73 2.75A2.5 2.5 0 1 0 13 12.4z"/></svg>
+          </button>
+        </div>` : "";
+
+      // Nudge banner (own profile + incomplete)
+      const hasAvatar = !!user.avatarUrl;
+      const hasName = !!user.displayName;
+      const hasBio = !!user.bio;
+      const steps = [hasName, hasAvatar, hasBio];
+      const doneCount = steps.filter(Boolean).length;
+      const pct = Math.round(doneCount / 3 * 100);
+
+      const nudge = (isOwn && doneCount < 3) ? `
+        <div class="prof-nudge" id="profNudge">
+          <div class="prof-nudge-head">
+            <div class="prof-nudge-icon">✦</div>
+            <div>
+              <h3>Complete your profile</h3>
+              <p>${doneCount} of 3 steps done</p>
+            </div>
+          </div>
+          <div class="prof-nudge-progress"><div class="prof-nudge-bar" style="width:${pct}%"></div></div>
+          <div class="prof-nudge-steps">
+            <div class="prof-nudge-step ${hasName ? "is-done" : ""}">
+              <div class="prof-nudge-check ${hasName ? "done" : "todo"}">${hasName ? "✓" : "1"}</div>
+              <span class="prof-nudge-step-label">Add your display name</span>
+            </div>
+            <div class="prof-nudge-step ${hasAvatar ? "is-done" : ""}">
+              <div class="prof-nudge-check ${hasAvatar ? "done" : "todo"}">${hasAvatar ? "✓" : "2"}</div>
+              <span class="prof-nudge-step-label">Upload a profile photo</span>
+            </div>
+            <div class="prof-nudge-step ${hasBio ? "is-done" : ""}">
+              <div class="prof-nudge-check ${hasBio ? "done" : "todo"}">${hasBio ? "✓" : "3"}</div>
+              <span class="prof-nudge-step-label">Write a short bio</span>
+            </div>
+          </div>
+          <button class="prof-nudge-cta" id="nudgeEditBtn">Personalise my profile →</button>
+        </div>` : "";
+
+      const bioEl = user.bio
+        ? `<div class="prof-bio">${esc(user.bio)}</div>`
+        : (isOwn ? `<div class="prof-bio-placeholder" id="bioPH">+ Add a bio</div>` : "");
+
+      profContent.innerHTML = `
+        <div class="prof-hero">
+          <div class="prof-hero-pattern"></div>
+        </div>
+
+        <div class="prof-identity-block" style="padding:0 20px">
+          <div class="prof-header-row">
+            <div class="prof-avatar-ring">
+              <div class="prof-avatar" id="profAvatar">${avatarHtml}</div>
+              ${changePencil}
+            </div>
+            ${ownActions}
+          </div>
+
+          <div class="prof-name" id="profName">${user.displayName || "Anonymous"}</div>
+          <div class="prof-meta">Member since ${joined}</div>
+
+          <div id="profBioWrap">${bioEl}</div>
+        </div>
+
+        <div class="prof-stats">
+          <div class="prof-stat">
+            <div class="prof-stat-value">${(user.likesGiven || 0).toLocaleString()}</div>
+            <div class="prof-stat-label">Likes given</div>
+          </div>
+          <div class="prof-stat">
+            <div class="prof-stat-value">${(user.commentsMade || 0).toLocaleString()}</div>
+            <div class="prof-stat-label">Comments</div>
+          </div>
+          <div class="prof-stat" id="integrityCell">
+            <div class="prof-stat-value">—</div>
+            <div class="prof-stat-label">Integrity</div>
+          </div>
+        </div>
+
+        ${nudge}
+
+        <div class="prof-section" id="lbSection" style="display:none">
+          <div class="prof-section-label">Leaderboard</div>
+          <div class="prof-lb-row"></div>
+        </div>
+      `;
+
+      wireInteractions(user);
+    }
+
+    function wireInteractions(user) {
+      // Edit button
+      document.getElementById("editBtn")?.addEventListener("click", openModal);
+      document.getElementById("nudgeEditBtn")?.addEventListener("click", openModal);
+      document.getElementById("avatarPencilBtn")?.addEventListener("click", () => {
+        openModal();
+        setTimeout(() => document.getElementById("modalAvatarInput")?.click(), 350);
+      });
+      document.getElementById("bioPH")?.addEventListener("click", openModal);
+
+      // Share button
+      document.getElementById("shareBtn")?.addEventListener("click", () => {
+        const url = `${location.origin}/profile.html?id=${userId}`;
+        if (navigator.share) navigator.share({ title: `${user.displayName || "Profile"} on Taste Manna`, url }).catch(() => {});
+        else navigator.clipboard?.writeText(url).then(() => toast("Link copied ✦"));
+      });
+    }
+
+    // ── Edit modal ──
+    function openModal() {
+      const user = currentUser;
+      if (!user) return;
+
+      pendingAvatar = null;
+      const overlay = document.getElementById("editModalOverlay");
+      const nameInput = document.getElementById("modalName");
+      const bioInput = document.getElementById("modalBio");
+      const bioCount = document.getElementById("bioCharCount");
+      const modalAvatar = document.getElementById("modalAvatar");
+      const errorEl = document.getElementById("modalError");
+
+      nameInput.value = user.displayName || "";
+      bioInput.value = user.bio || "";
+      bioCount.textContent = bioInput.value.length;
+      errorEl.style.display = "none";
+
+      const initial = (user.displayName || "?")[0].toUpperCase();
+      modalAvatar.innerHTML = user.avatarUrl
+        ? `<img src="${esc(user.avatarUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;" />`
+        : initial;
+
+      overlay.classList.add("open");
+      setTimeout(() => nameInput.focus(), 300);
+    }
+
+    function closeModal() {
+      document.getElementById("editModalOverlay").classList.remove("open");
+      pendingAvatar = null;
+    }
+
+    document.getElementById("modalCloseBtn").addEventListener("click", closeModal);
+    document.getElementById("editModalOverlay").addEventListener("click", e => {
+      if (e.target === document.getElementById("editModalOverlay")) closeModal();
+    });
+
+    // Bio char count
+    document.getElementById("modalBio").addEventListener("input", e => {
+      document.getElementById("bioCharCount").textContent = e.target.value.length;
+    });
+
+    // Avatar file input
+    document.getElementById("modalAvatarInput").addEventListener("change", e => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (file.size > 600_000) {
+        document.getElementById("modalError").textContent = "Photo too large — please use an image under 500 KB.";
+        document.getElementById("modalError").style.display = "block";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = ev => {
+        pendingAvatar = ev.target.result;
+        const modalAvatar = document.getElementById("modalAvatar");
+        modalAvatar.innerHTML = `<img src="${pendingAvatar}" alt="" style="width:100%;height:100%;object-fit:cover;" />`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Save
+    document.getElementById("modalSaveBtn").addEventListener("click", async () => {
+      const btn = document.getElementById("modalSaveBtn");
+      const errorEl = document.getElementById("modalError");
+      errorEl.style.display = "none";
+      btn.disabled = true;
+      btn.textContent = "Saving…";
+
+      const displayName = document.getElementById("modalName").value.trim();
+      const bio = document.getElementById("modalBio").value.trim();
+      const body = { displayName, bio };
+      if (pendingAvatar) body.avatarUrl = pendingAvatar;
+
+      try {
+        const res = await fetch("/api/users/me", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Save failed");
+
+        // Update currentUser
+        currentUser = { ...currentUser, ...data };
+
+        // Patch live UI
+        const nameEl = document.getElementById("profName");
+        if (nameEl) nameEl.textContent = data.displayName || "Anonymous";
+
+        const bioWrap = document.getElementById("profBioWrap");
+        if (bioWrap) {
+          if (data.bio) bioWrap.innerHTML = `<div class="prof-bio">${esc(data.bio)}</div>`;
+          else if (isOwn) bioWrap.innerHTML = `<div class="prof-bio-placeholder" id="bioPH">+ Add a bio</div>`;
+          else bioWrap.innerHTML = "";
+          // Rewire bio placeholder if shown
+          document.getElementById("bioPH")?.addEventListener("click", openModal);
+        }
+
+        if (data.avatarUrl) {
+          const profAvatar = document.getElementById("profAvatar");
+          if (profAvatar) profAvatar.innerHTML = `<img src="${esc(data.avatarUrl)}" alt="" />`;
+        }
+
+        // Refresh nudge
+        const hasAvatar = !!data.avatarUrl;
+        const hasName = !!data.displayName;
+        const hasBio = !!data.bio;
+        const nudge = document.getElementById("profNudge");
+        if (nudge && hasAvatar && hasName && hasBio) nudge.remove();
+        else if (nudge) {
+          const doneCount = [hasName, hasAvatar, hasBio].filter(Boolean).length;
+          nudge.querySelector(".prof-nudge-bar").style.width = `${Math.round(doneCount / 3 * 100)}%`;
+          nudge.querySelector("p").textContent = `${doneCount} of 3 steps done`;
+        }
+
+        closeModal();
+        toast("Profile updated ✦");
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = "block";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Save";
+      }
+    });
+  </script>
+</body>
+</html>

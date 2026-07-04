@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>My Library — Taste Manna</title>
+  <link rel="icon" href="/assets/logo-64.png" type="image/png" />
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .lib-header { margin-bottom: 32px; }
+    .lib-title { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .lib-subtitle { font-size: 14px; color: var(--muted); }
+
+    .lib-tabs { display: flex; gap: 12px; margin-bottom: 28px; border-bottom: 1px solid var(--glass-border); }
+    .lib-tab { border: none; background: transparent; color: var(--muted); font-size: 14px; font-weight: 600; padding: 12px 4px; cursor: pointer; transition: all .2s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .lib-tab:hover { color: var(--ink); }
+    .lib-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    .lib-grid { display: flex; flex-direction: column; gap: 16px; }
+    .lib-item { display: flex; gap: 16px; padding: 16px; background: rgba(255,255,255,.02); border: 1px solid var(--glass-border); border-radius: 10px; transition: all .2s; }
+    .lib-item:hover { background: rgba(255,255,255,.04); border-color: var(--gold); }
+
+    .lib-item-cat { flex-shrink: 0; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(201,161,74,.15), rgba(201,161,74,.08)); border-radius: 8px; font-size: 20px; }
+    .lib-item-body { flex: 1; min-width: 0; }
+    .lib-item-text { font-size: 15px; line-height: 1.55; color: var(--ink); margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .lib-item-ref { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+    .lib-item-comment { font-size: 12px; color: var(--gold); background: rgba(201,161,74,.1); padding: 8px; border-radius: 6px; border-left: 2px solid var(--gold); }
+    .lib-item-comment-text { font-style: italic; color: var(--ink); }
+
+    .lib-stats { display: flex; gap: 16px; margin-bottom: 24px; }
+    .lib-stat { flex: 1; padding: 14px; background: linear-gradient(135deg, rgba(201,161,74,.1), rgba(201,161,74,.05)); border: 1px solid var(--glass-border); border-radius: 10px; }
+    .lib-stat-num { font-size: 20px; font-weight: 700; color: var(--gold); }
+    .lib-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .lib-empty { text-align: center; color: var(--muted); font-size: 14px; padding: 64px 24px; }
+    .lib-empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .lib-loading { text-align: center; color: var(--muted); font-size: 14px; padding: 64px 24px; }
+  </style>
+</head>
+<body class="page-scroll">
+  <div class="ambient">
+    <div class="ambient-blob ambient-blob--a"></div>
+    <div class="ambient-blob ambient-blob--b"></div>
+    <div class="ambient-blob ambient-blob--c"></div>
+    <div class="ambient-grain"></div>
+  </div>
+
+  <div class="topbar">
+    <div class="brand">
+      <img class="logo" src="/logo.png" alt="" width="32" height="32" />
+      <span>Taste Manna</span>
+    </div>
+    <nav class="page-nav">
+      <a href="/index.html" class="page-nav-link">For You</a>
+      <a href="/home.html" class="page-nav-link">Home</a>
+      <a href="/leaderboard.html" class="page-nav-link">Leaderboard</a>
+      <a href="/upgrade.html" class="page-nav-link">Premium</a>
+      <a href="/donate.html" class="page-nav-link">Donate</a>
+    </nav>
+    <div class="topbar-right">
+      <button class="account-btn" id="accountBtn"></button>
+    </div>
+  </div>
+
+  <div class="container main-with-nav" style="padding-top: 80px; max-width: 680px; margin: 0 auto;">
+    <div class="lib-header">
+      <h1 class="lib-title">My Library</h1>
+      <p class="lib-subtitle">Your saved Scripture, reflections, and bookmarks</p>
+    </div>
+
+    <div id="statsContainer" style="display:none">
+      <div class="lib-stats">
+        <div class="lib-stat">
+          <div class="lib-stat-num" id="likedCount">0</div>
+          <div class="lib-stat-label">Liked</div>
+        </div>
+        <div class="lib-stat">
+          <div class="lib-stat-num" id="savedCount">0</div>
+          <div class="lib-stat-label">Saved</div>
+        </div>
+        <div class="lib-stat">
+          <div class="lib-stat-num" id="commentedCount">0</div>
+          <div class="lib-stat-label">Comments</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lib-tabs">
+      <button class="lib-tab active" data-tab="liked">Liked</button>
+      <button class="lib-tab" data-tab="saved">Saved</button>
+      <button class="lib-tab" data-tab="commented">Comments</button>
+    </div>
+
+    <div id="libContent" class="lib-grid">
+      <div class="lib-loading">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <a href="/index.html" class="bottom-nav-item"><div class="bottom-nav-label">For You</div></a>
+    <a href="/home.html" class="bottom-nav-item"><div class="bottom-nav-label">Home</div></a>
+    <a href="/leaderboard.html" class="bottom-nav-item"><div class="bottom-nav-label">Leaderboard</div></a>
+    <a href="/upgrade.html" class="bottom-nav-item"><div class="bottom-nav-label">Premium</div></a>
+    <a href="/donate.html" class="bottom-nav-item"><div class="bottom-nav-label">Donate</div></a>
+  </nav>
+
+  <div id="welcome"></div>
+
+  <script type="module">
+    import { initPageAccount } from "/src/core/pageAccount.js";
+    import { openAuthPanel } from "/src/ui/components/welcome.js";
+
+    const pageAccount = await initPageAccount(document.getElementById("accountBtn"));
+    const session = pageAccount?.getSession();
+
+    if (!session?.user) {
+      document.getElementById("libContent").innerHTML =
+        `<div class="lib-empty"><div class="lib-empty-icon">📚</div><p>Sign in to access your Library</p><button class="cm-mini cm-mini--primary" id="signInBtn" style="margin-top:16px">Sign in</button></div>`;
+      document.getElementById("signInBtn")?.addEventListener("click", () => openAuthPanel({ mode: "login", dismissible: true }));
+    } else {
+      let data = null;
+      let activeTab = "liked";
+
+      async function load() {
+        const res = await fetch("/api/library", { credentials: "same-origin" });
+        if (!res.ok) {
+          document.getElementById("libContent").innerHTML = `<div class="lib-empty"><div class="lib-empty-icon">⚠️</div>Couldn't load library</div>`;
+          return;
+        }
+        data = await res.json();
+        document.getElementById("statsContainer").style.display = "block";
+        document.getElementById("likedCount").textContent = data.liked.length;
+        document.getElementById("savedCount").textContent = data.saved.length;
+        document.getElementById("commentedCount").textContent = data.commented.length;
+        render();
+      }
+
+      const catLabels = { verse: "Verse", history: "History", theology: "Theology", catechism: "Catechism", funfact: "Fun Fact" };
+
+      function renderItem(item) {
+        const comment = item.commentText
+          ? `<div class="lib-item-comment">You commented: <span class="lib-item-comment-text">"${item.commentText}"</span></div>` : "";
+
+        if (item.kind === "post") {
+          const author = item.user?.displayName || "Someone";
+          const caption = item.caption ? item.caption.slice(0, 120) + (item.caption.length > 120 ? "…" : "") : "";
+          let media = "";
+          if (item.mediaType === "photo" && item.mediaUrl) {
+            media = `<img src="${item.mediaUrl}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;flex-shrink:0;" />`;
+          } else if (item.mediaType === "video" && (item.thumbnailUrl || item.mediaUrl)) {
+            media = `<div style="position:relative;width:56px;height:56px;flex-shrink:0;border-radius:8px;overflow:hidden;background:#111;">
+              <img src="${item.thumbnailUrl || item.mediaUrl}" alt="" style="width:100%;height:100%;object-fit:cover;" />
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><polygon points="4,2 14,8 4,14"/></svg>
+              </div>
+            </div>`;
+          }
+          return `<div class="lib-item">
+            ${media}
+            <div class="lib-item-body">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">${author} · ${item.mediaType || "post"}</div>
+              <div class="lib-item-text">${caption || "(no caption)"}</div>
+              ${comment}
+            </div>
+          </div>`;
+        }
+
+        // Bible content
+        const text = item.text?.replace(/<[^>]+>/g, "") ?? "";
+        const shortText = text.length > 140 ? text.slice(0, 137) + "…" : text;
+        const label = catLabels[item.category] ?? item.category ?? "";
+        return `<div class="lib-item">
+          <div class="lib-item-cat" style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:600;min-width:52px;text-align:center;">${label}</div>
+          <div class="lib-item-body">
+            <div class="lib-item-text">${shortText}</div>
+            <div class="lib-item-ref">${item.ref ?? ""}</div>
+            ${comment}
+          </div>
+        </div>`;
+      }
+
+      function render() {
+        const items = data[activeTab] ?? [];
+        const container = document.getElementById("libContent");
+        if (!items.length) {
+          const messages = {
+            liked: { icon: "🤍", text: "No liked items yet" },
+            saved: { icon: "📌", text: "No saved items yet" },
+            commented: { icon: "💬", text: "No comments yet" }
+          };
+          const msg = messages[activeTab];
+          container.innerHTML = `<div class="lib-empty"><div class="lib-empty-icon">${msg.icon}</div>${msg.text}</div>`;
+          return;
+        }
+        container.innerHTML = items.map(renderItem).join("");
+      }
+
+      document.querySelectorAll(".lib-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".lib-tab").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeTab = btn.dataset.tab;
+          render();
+        });
+      });
+
+      await load();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<svg width="64" height="64" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="bread" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" stop-color="#e2ad6a"/>
+<stop offset="100%" stop-color="#a8702f"/>
+</linearGradient>
+<linearGradient id="breadTop" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" stop-color="#f6e3bf"/>
+<stop offset="100%" stop-color="#e2ad6a"/>
+</linearGradient>
+<linearGradient id="wine" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" stop-color="#b6304a"/>
+<stop offset="100%" stop-color="#6c1626"/>
+</linearGradient>
+<linearGradient id="goldRim" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" stop-color="#fde2ab"/>
+<stop offset="100%" stop-color="#c9924a"/>
+</linearGradient>
+</defs>
+
+<circle cx="160" cy="160" r="156" fill="#0f0c1d" stroke="#3a2f55" stroke-width="2"/>
+<circle cx="160" cy="160" r="148" fill="none" stroke="url(#goldRim)" stroke-width="1.5" stroke-opacity="0.5"/>
+
+<ellipse cx="160" cy="226" rx="96" ry="10" fill="#000" fill-opacity="0.25"/>
+
+<g transform="translate(100,180)">
+<path d="M-46 28 Q-50 -6 -22 -22 Q0 -34 22 -22 Q50 -6 46 28 Q46 40 0 40 Q-46 40 -46 28 Z" fill="url(#bread)"/>
+<path d="M-40 6 Q-40 -16 -16 -26 Q0 -32 16 -26 Q40 -16 40 6 Q40 14 0 16 Q-40 14 -40 6 Z" fill="url(#breadTop)"/>
+<path d="M-10 -18 Q-8 0 -10 18" stroke="#8a5a26" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+<path d="M14 -20 Q16 0 14 20" stroke="#8a5a26" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+</g>
+
+<g transform="translate(214,0)">
+<path d="M178 96 Q178 134 144 140 L144 196 L162 196 L162 206 L126 206 L126 196 L144 196 L144 140 Q110 134 110 96 L114 96 Q116 122 144 128 Q172 122 174 96 Z" fill="url(#goldRim)"/>
+<path d="M116 90 Q116 130 144 130 Q172 130 172 90 L172 56 L116 56 Z" fill="url(#wine)"/>
+<path d="M116 56 L172 56 L168 36 L120 36 Z" fill="none" stroke="url(#goldRim)" stroke-width="2.5"/>
+<ellipse cx="144" cy="92" rx="22" ry="7" fill="#d9536e" fill-opacity="0.55"/>
+</g>
+
+<g stroke="#f6f3ec" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round">
+<line x1="92" y1="76" x2="98" y2="76"/>
+<line x1="95" y1="73" x2="95" y2="79"/>
+<line x1="232" y1="220" x2="238" y2="220"/>
+<line x1="235" y1="217" x2="235" y2="223"/>
+</g>
+</svg>

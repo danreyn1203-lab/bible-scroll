@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Daily Reading — Taste Manna</title>
+  <link rel="icon" href="/assets/logo-64.png" type="image/png" />
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .rp-header { margin-bottom: 28px; }
+    .rp-day-badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--gold); background: rgba(201,161,74,.12); padding: 4px 12px; border-radius: 999px; margin-bottom: 12px; }
+    .rp-title { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+    .rp-subtitle { font-size: 14px; color: var(--muted); }
+
+    .rp-progress { height: 4px; background: rgba(255,255,255,.08); border-radius: 99px; margin-bottom: 32px; overflow: hidden; }
+    .rp-progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), #e8c97a); border-radius: 99px; transition: width .6s ease; }
+
+    .rp-translation { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .rp-trans-btn { border: 1px solid var(--glass-border); background: rgba(255,255,255,.04); color: var(--muted); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 999px; cursor: pointer; transition: all .2s; }
+    .rp-trans-btn.active, .rp-trans-btn:hover { background: var(--gold); border-color: var(--gold); color: #2a1d05; }
+
+    .rp-scripture { background: linear-gradient(135deg, rgba(201,161,74,.06), rgba(118,75,162,.06)); border: 1px solid rgba(201,161,74,.2); border-radius: 16px; padding: 24px; margin-bottom: 20px; max-height: 60vh; overflow-y: auto; }
+    .rp-ref { font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 16px; text-transform: uppercase; letter-spacing: .06em; }
+    .rp-verse { display: flex; gap: 12px; margin-bottom: 12px; line-height: 1.7; }
+    .rp-verse-num { flex-shrink: 0; font-size: 10px; font-weight: 700; color: var(--gold); padding-top: 4px; min-width: 18px; }
+    .rp-verse-text { font-size: 15px; color: var(--ink); font-family: var(--serif, Georgia, serif); }
+
+    .rp-loading { text-align: center; padding: 48px; color: var(--muted); font-size: 14px; }
+
+    .rp-nav { display: flex; gap: 12px; margin-bottom: 24px; }
+    .rp-nav-btn { flex: 1; padding: 12px; border: 1px solid var(--glass-border); background: rgba(255,255,255,.04); color: var(--ink); font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all .2s; }
+    .rp-nav-btn:hover { background: rgba(255,255,255,.08); }
+    .rp-nav-btn.primary { background: var(--gold); border-color: var(--gold); color: #2a1d05; }
+
+    .rp-tomorrow { padding: 14px 16px; background: rgba(255,255,255,.02); border: 1px solid var(--glass-border); border-radius: 10px; font-size: 13px; color: var(--muted); }
+    .rp-tomorrow strong { color: var(--ink); }
+  </style>
+</head>
+<body class="page-scroll">
+  <div class="ambient">
+    <div class="ambient-blob ambient-blob--a"></div>
+    <div class="ambient-blob ambient-blob--b"></div>
+    <div class="ambient-blob ambient-blob--c"></div>
+    <div class="ambient-grain"></div>
+  </div>
+
+  <div class="topbar">
+    <div class="brand">
+      <img class="logo" src="/logo.png" alt="" width="32" height="32" />
+      <span>Taste Manna</span>
+    </div>
+    <nav class="page-nav">
+      <a href="/index.html" class="page-nav-link">For You</a>
+      <a href="/home.html" class="page-nav-link">Home</a>
+      <a href="/reading-plan.html" class="page-nav-link active">Reading</a>
+      <a href="/upgrade.html" class="page-nav-link">Premium</a>
+      <a href="/donate.html" class="page-nav-link">Donate</a>
+    </nav>
+    <div class="topbar-right">
+      <button class="account-btn" id="accountBtn"></button>
+    </div>
+  </div>
+
+  <div class="container main-with-nav" style="padding-top: 80px; max-width: 680px; margin: 0 auto;">
+
+    <div class="rp-header">
+      <div class="rp-day-badge" id="dayBadge">Day —</div>
+      <h1 class="rp-title">Daily Scripture</h1>
+      <p class="rp-subtitle">Read through the Bible — one chapter a day</p>
+    </div>
+
+    <div class="rp-progress">
+      <div class="rp-progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+
+    <div class="rp-translation" id="translationPicker">
+      <button class="rp-trans-btn active" data-t="ESV">ESV</button>
+      <button class="rp-trans-btn" data-t="NIV">NIV</button>
+      <button class="rp-trans-btn" data-t="KJV">KJV</button>
+      <button class="rp-trans-btn" data-t="NLT">NLT</button>
+      <button class="rp-trans-btn" data-t="NASB">NASB</button>
+    </div>
+
+    <div id="scripture" class="rp-scripture">
+      <div class="rp-loading">Loading today's reading…</div>
+    </div>
+
+    <div class="rp-nav">
+      <button class="rp-nav-btn" id="prevBtn">Previous</button>
+      <button class="rp-nav-btn primary" id="nextBtn">Next Chapter</button>
+    </div>
+
+    <div class="rp-tomorrow" id="tomorrowBox">
+      Tomorrow: <strong id="tomorrowRef">—</strong>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="/index.html" class="bottom-nav-item"><div class="bottom-nav-label">For You</div></a>
+    <a href="/home.html" class="bottom-nav-item"><div class="bottom-nav-label">Home</div></a>
+    <a href="/reading-plan.html" class="bottom-nav-item active"><div class="bottom-nav-label">Reading</div></a>
+    <a href="/leaderboard.html" class="bottom-nav-item"><div class="bottom-nav-label">Leaderboard</div></a>
+    <a href="/donate.html" class="bottom-nav-item"><div class="bottom-nav-label">Donate</div></a>
+    <a href="/upgrade.html" class="bottom-nav-item"><div class="bottom-nav-label">Premium</div></a>
+  </nav>
+
+  <div id="welcome"></div>
+
+  <script type="module">
+    import { initPageAccount } from "/src/core/pageAccount.js";
+    initPageAccount(document.getElementById("accountBtn"));
+
+    const TRANSLATIONS = ["ESV","NIV","KJV","NLT","NASB"];
+    let currentTranslation = localStorage.getItem("rp-translation") || "ESV";
+    let currentDay = parseInt(localStorage.getItem("rp-day") || "0") || null;
+
+    async function load(day, translation) {
+      document.getElementById("scripture").innerHTML = `<div class="rp-loading">Loading…</div>`;
+      const params = new URLSearchParams({ translation });
+      if (day) params.set("day", day);
+      const res = await fetch(`/api/reading-plans/daily?${params}`);
+      if (!res.ok) {
+        document.getElementById("scripture").innerHTML = `<div class="rp-loading" style="color:var(--muted)">Couldn't load reading. Check your connection.</div>`;
+        return;
+      }
+      const data = await res.json();
+
+      // Save day
+      currentDay = data.day;
+      localStorage.setItem("rp-day", currentDay);
+
+      // Update header
+      document.getElementById("dayBadge").textContent = `Day ${data.day} of ${data.total}`;
+      document.getElementById("progressFill").style.width = `${(data.day / data.total * 100).toFixed(1)}%`;
+      document.getElementById("tomorrowRef").textContent = data.tomorrow.reference;
+
+      // Render verses
+      const ref = data.today.reference;
+      const verses = data.today.verses;
+      if (!verses || verses.length === 0) {
+        document.getElementById("scripture").innerHTML = `<div class="rp-ref">${ref}</div><p style="color:var(--muted);font-size:14px;">Translation not available for this chapter — try ESV or KJV.</p>`;
+        return;
+      }
+      document.getElementById("scripture").innerHTML = `
+        <div class="rp-ref">${ref} (${translation})</div>
+        ${verses.map(v => `
+          <div class="rp-verse">
+            <span class="rp-verse-num">${v.number}</span>
+            <span class="rp-verse-text">${v.text}</span>
+          </div>
+        `).join("")}
+      `;
+    }
+
+    // Translation picker
+    document.getElementById("translationPicker").querySelectorAll(".rp-trans-btn").forEach(btn => {
+      if (btn.dataset.t === currentTranslation) btn.classList.add("active");
+      else btn.classList.remove("active");
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".rp-trans-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentTranslation = btn.dataset.t;
+        localStorage.setItem("rp-translation", currentTranslation);
+        load(currentDay, currentTranslation);
+      });
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      load(currentDay + 1, currentTranslation);
+    });
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      if (currentDay > 1) load(currentDay - 1, currentTranslation);
+    });
+
+    // Initial load
+    load(currentDay, currentTranslation);
+  </script>
+</body>
+</html>

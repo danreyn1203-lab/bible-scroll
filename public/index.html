@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0c0a14" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<!-- SEO & Meta -->
+<title>Taste Manna — Discover Scripture Daily with AI Personalization</title>
+  <link rel="icon" href="/assets/logo-64.png" type="image/png" />
+<meta name="description" content="Taste Manna is a Bible discovery app with personalized scripture recommendations, social community, trending content, and gamification. Learn and grow your faith daily." />
+<meta name="keywords" content="Bible app, Scripture discovery, Personalized Bible study, Christian community, Faith growth, Bible verses, Spiritual development" />
+<meta name="author" content="Taste Manna" />
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+<!-- OpenGraph -->
+<meta property="og:title" content="Taste Manna — Discover Scripture Daily" />
+<meta property="og:description" content="Personalized Bible discovery with community, trends, and gamification." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://tastemanna.com/" />
+<meta property="og:image" content="https://tastemanna.com/api/seo/og-image?title=Taste+Manna&desc=Discover+Scripture+Daily" />
+<meta property="og:site_name" content="Taste Manna" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Taste Manna — Discover Scripture Daily" />
+<meta name="twitter:description" content="Personalized Bible discovery with community, trends, and gamification." />
+<meta name="twitter:image" content="https://tastemanna.com/api/seo/og-image?title=Taste+Manna&desc=Discover+Scripture" />
+<meta name="twitter:creator" content="@tastemanna" />
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Taste Manna",
+  "description": "Personalized Bible discovery app with community and gamification",
+  "url": "https://tastemanna.com",
+  "image": "https://tastemanna.com/logo.png",
+  "applicationCategory": "Lifestyle",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Taste Manna"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "150"
+  }
+}
+</script>
+
+<link rel="manifest" href="manifest.json" />
+<link rel="canonical" href="https://tastemanna.com/" />
+<link rel="alternate" hreflang="en" href="https://tastemanna.com/" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="ambient" aria-hidden="true">
+    <div class="ambient-blob ambient-blob--a"></div>
+    <div class="ambient-blob ambient-blob--b"></div>
+    <div class="ambient-blob ambient-blob--c"></div>
+    <div class="ambient-grain"></div>
+  </div>
+  <canvas id="particles" class="particles" aria-hidden="true"></canvas>
+
+  <a href="#feed" class="skip-link">Skip to content</a>
+
+  <header class="topbar" role="banner">
+    <div class="brand">
+      <img class="logo" src="/logo.png" alt="Taste Manna logo" width="32" height="32" />
+      <span>Taste Manna</span>
+    </div>
+    <nav class="topbar-right" aria-label="Main navigation">
+      <div class="tabs" role="tablist" aria-label="Views">
+        <button class="tab active" data-view="feed" role="tab" aria-selected="true" aria-controls="feed">For You</button>
+        <button class="tab" data-view="community" role="tab" aria-selected="false" aria-controls="feed">Community</button>
+        <button class="tab" data-view="premium" role="tab" aria-selected="false" aria-controls="feed">Premium</button>
+        <a href="/reading-plan.html" class="tab">Daily Reading</a>
+        <a href="/leaderboard.html" class="tab">Leaderboard</a>
+        <a href="/ads.html" class="tab">Advertise</a>
+        <a href="/donate.html" class="tab">Donate</a>
+        <button class="topbar-search-btn" id="search-btn" aria-label="Search">Search</button>
+      </div>
+      <button class="account-btn" id="account-btn" aria-label="Account">Sign in</button>
+    </nav>
+  </header>
+  <div id="search-overlay"></div>
+
+  <nav class="filters" id="filters" aria-label="Content filters"></nav>
+
+  <main class="feed main-with-nav" id="feed" aria-label="Content feed" tabindex="-1"></main>
+
+  <button class="fab" id="post-fab" aria-label="New post">+</button>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <div id="welcome"></div>
+
+  <!-- Bottom navigation -->
+  <nav class="bottom-nav" id="mobileNav" aria-label="Mobile navigation">
+    <a href="#" class="bottom-nav-item active" data-view="feed" aria-current="page">
+      <div class="bottom-nav-label">For You</div>
+    </a>
+    <a href="#" class="bottom-nav-item" data-view="community">
+      <div class="bottom-nav-label">Community</div>
+    </a>
+    <a href="/leaderboard.html" class="bottom-nav-item">
+      <div class="bottom-nav-label">Leaderboard</div>
+    </a>
+    <a href="/upgrade.html" class="bottom-nav-item">
+      <div class="bottom-nav-label">Premium</div>
+    </a>
+    <a href="/home.html" class="bottom-nav-item">
+      <div class="bottom-nav-label">More</div>
+    </a>
+  </nav>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

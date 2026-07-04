@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Donate — Taste Manna</title>
+  <link rel="icon" href="/assets/logo-64.png" type="image/png" />
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="page-scroll">
+  <div class="ambient">
+    <div class="ambient-blob ambient-blob--a"></div>
+    <div class="ambient-blob ambient-blob--b"></div>
+    <div class="ambient-blob ambient-blob--c"></div>
+    <div class="ambient-grain"></div>
+  </div>
+
+  <div class="topbar">
+    <div class="brand">
+      <img class="logo" src="/logo.png" alt="" width="32" height="32" />
+      <span>Taste Manna</span>
+    </div>
+    <nav class="page-nav">
+      <a href="/index.html" class="page-nav-link">For You</a>
+      <a href="/home.html" class="page-nav-link">Home</a>
+      <a href="/leaderboard.html" class="page-nav-link">Leaderboard</a>
+      <a href="/upgrade.html" class="page-nav-link">Premium</a>
+      <a href="/donate.html" class="page-nav-link active">Donate</a>
+    </nav>
+    <div class="topbar-right">
+      <button class="account-btn" id="accountBtn"></button>
+    </div>
+  </div>
+
+  <div class="container main-with-nav" style="padding-top: 80px; max-width: 600px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 40px;">
+      <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 12px;">Support Taste Manna</h1>
+      <p style="color: var(--muted); font-size: 14px;">Help us reach more people with Scripture discovery</p>
+    </div>
+
+    <div style="background: linear-gradient(135deg, rgba(102,126,234,.1), rgba(118,75,162,.1)); border: 1px solid rgba(201,161,74,.2); border-radius: 16px; padding: 24px; margin-bottom: 20px;">
+      <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Choose an amount</h2>
+
+      <div id="amountButtons" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;"></div>
+
+      <div style="margin-bottom: 16px;">
+        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px;">Custom amount ($)</label>
+        <input type="number" id="customAmount" min="1" max="10000" value="" placeholder="e.g., 25" style="width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: var(--ink); font-size: 14px; outline: none;">
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px;">Message (optional)</label>
+        <textarea id="donationMessage" placeholder="Why are you supporting us?" maxlength="200" style="width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: var(--ink); font-size: 14px; resize: vertical; height: 80px; outline: none; font-family: inherit;"></textarea>
+      </div>
+
+      <button id="donateBtn" class="cm-mini cm-mini--primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 600;">Donate</button>
+    </div>
+
+    <div style="background: rgba(255,255,255,.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px; font-size: 13px; line-height: 1.5; color: var(--muted);">
+      <strong style="color: var(--ink);">💡 Every donation:</strong><br>
+      • Helps expand our Scripture database<br>
+      • Enables new features for Bible discovery<br>
+      • Supports our community moderators<br>
+      • Makes Taste Manna free for everyone<br>
+      • Supports our missionaries!
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <a href="/index.html" class="bottom-nav-item"><div class="bottom-nav-label">For You</div></a>
+    <a href="/home.html" class="bottom-nav-item"><div class="bottom-nav-label">Home</div></a>
+    <a href="/leaderboard.html" class="bottom-nav-item"><div class="bottom-nav-label">Leaderboard</div></a>
+    <a href="/upgrade.html" class="bottom-nav-item"><div class="bottom-nav-label">Premium</div></a>
+    <a href="/donate.html" class="bottom-nav-item active"><div class="bottom-nav-label">Donate</div></a>
+  </nav>
+
+  <div id="welcome"></div>
+
+  <script type="module">
+    import { initPageAccount } from "/src/core/pageAccount.js";
+    const pageAccount = initPageAccount(document.getElementById('accountBtn'));
+
+    const amounts = [5, 10, 25, 50, 100, 250];
+    const buttonsContainer = document.getElementById("amountButtons");
+    let selected = null;
+
+    amounts.forEach(amt => {
+      const btn = document.createElement("button");
+      btn.textContent = `$${amt}`;
+      btn.style.cssText = "background: rgba(255,255,255,.04); border: 1px solid var(--glass-border); color: var(--muted); padding: 12px; border-radius: 8px; cursor: pointer; transition: all .2s; font-weight: 600;";
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#amountButtons button").forEach(b => {
+          b.style.background = "rgba(255,255,255,.04)";
+          b.style.borderColor = "var(--glass-border)";
+          b.style.color = "var(--muted)";
+        });
+        btn.style.background = "var(--gold)";
+        btn.style.borderColor = "var(--gold)";
+        btn.style.color = "#2a1d05";
+        selected = amt;
+        document.getElementById("customAmount").value = "";
+      });
+      buttonsContainer.appendChild(btn);
+    });
+
+    document.getElementById("customAmount").addEventListener("change", (e) => {
+      if (e.target.value) {
+        document.querySelectorAll("#amountButtons button").forEach(b => {
+          b.style.background = "rgba(255,255,255,.04)";
+          b.style.borderColor = "var(--glass-border)";
+          b.style.color = "var(--muted)";
+        });
+        selected = null;
+      }
+    });
+
+    document.getElementById("donateBtn").addEventListener("click", async () => {
+      const amount = selected || parseFloat(document.getElementById("customAmount").value);
+      if (!amount || amount < 1) {
+        alert("Please select or enter a valid amount");
+        return;
+      }
+
+      const session = (await pageAccount)?.getSession();
+      if (!session?.user) {
+        const { openAuthPanel } = await import("/src/ui/components/welcome.js");
+        openAuthPanel({ mode: "login", dismissible: true });
+        return;
+      }
+
+      const message = document.getElementById("donationMessage").value;
+      const btn = document.getElementById("donateBtn");
+      btn.disabled = true;
+      btn.textContent = "Processing…";
+
+      try {
+        const res = await fetch("/api/donations/create-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ amount, message }),
+        });
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert("Failed to create donation session");
+          btn.disabled = false;
+          btn.textContent = "Donate";
+        }
+      } catch (err) {
+        alert("Error: " + err.message);
+        btn.disabled = false;
+        btn.textContent = "Donate";
+      }
+    });
+  </script>
+</body>
+</html>

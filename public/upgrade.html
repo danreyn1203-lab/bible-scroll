@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Go Premium — Taste Manna</title>
+  <link rel="icon" href="/assets/logo-64.png" type="image/png" />
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .up-wrap { max-width: 500px; margin: 0 auto; padding: 88px 20px 100px; }
+
+    /* Hero */
+    .up-hero { text-align: center; padding: 32px 0 40px; }
+    .up-badge { display: inline-block; background: linear-gradient(135deg, var(--gold), #e8a84a); color: #2a1d05; padding: 5px 16px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 18px; }
+    .up-title { font-size: clamp(28px, 7vw, 40px); font-weight: 800; color: var(--ink); line-height: 1.15; margin-bottom: 14px; }
+    .up-title em { font-style: normal; background: linear-gradient(135deg, var(--gold), #e8a84a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .up-sub { font-size: 15px; color: var(--muted); line-height: 1.6; max-width: 360px; margin: 0 auto; }
+
+    /* Pricing card */
+    .up-card { background: linear-gradient(135deg, rgba(240,194,126,.09), rgba(240,194,126,.03)); border: 1.5px solid rgba(240,194,126,.4); border-radius: 24px; padding: 30px 26px 26px; margin-bottom: 20px; position: relative; overflow: hidden; }
+    .up-card::before { content: ""; position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; background: radial-gradient(circle, rgba(240,194,126,.15), transparent 70%); pointer-events: none; }
+    .up-price-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; }
+    .up-price-amt { font-size: 52px; font-weight: 800; color: var(--gold); line-height: 1; }
+    .up-price-per { font-size: 16px; color: var(--muted); }
+    .up-price-note { font-size: 12px; color: var(--muted); margin-bottom: 26px; }
+
+    /* Feature list */
+    .up-features { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+    .up-feature { display: flex; align-items: flex-start; gap: 14px; }
+    .up-feature-dot { width: 24px; height: 24px; border-radius: 50%; background: rgba(240,194,126,.2); border: 1.5px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .up-feature-dot svg { width: 11px; height: 11px; stroke: var(--gold); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .up-feature-text { flex: 1; }
+    .up-feature-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+    .up-feature-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+    /* CTA */
+    .up-btn { width: 100%; padding: 17px; background: linear-gradient(135deg, var(--gold), #e8a84a); color: #2a1d05; border: 0; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: all .2s; letter-spacing: .3px; }
+    .up-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(240,194,126,.35); }
+    .up-btn:active:not(:disabled) { transform: scale(.97); }
+    .up-btn:disabled { opacity: .55; cursor: default; }
+    .up-btn-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.5; }
+
+    /* Divider */
+    .up-divider { display: flex; align-items: center; gap: 14px; margin: 24px 0; }
+    .up-divider-line { flex: 1; height: 1px; background: var(--glass-border); }
+    .up-divider-text { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; white-space: nowrap; }
+
+    /* Compare table */
+    .up-table { background: rgba(255,255,255,.03); border: 1px solid var(--glass-border); border-radius: 18px; overflow: hidden; margin-bottom: 20px; }
+    .up-table-head { display: grid; grid-template-columns: 1fr auto auto; padding: 12px 18px; background: rgba(255,255,255,.04); border-bottom: 1px solid var(--glass-border); }
+    .up-table-head-free { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; text-align: center; min-width: 48px; }
+    .up-table-head-pro { font-size: 11px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .5px; text-align: center; min-width: 48px; }
+    .up-table-row { display: grid; grid-template-columns: 1fr auto auto; padding: 13px 18px; border-bottom: 1px solid rgba(255,255,255,.04); align-items: center; }
+    .up-table-row:last-child { border-bottom: 0; }
+    .up-table-feat { font-size: 13px; color: var(--ink); }
+    .up-table-free { text-align: center; min-width: 48px; font-size: 13px; color: var(--muted); }
+    .up-table-pro { text-align: center; min-width: 48px; font-size: 13px; color: var(--gold); font-weight: 700; }
+
+    /* Alerts */
+    .up-alert { padding: 14px 18px; border-radius: 14px; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+    .up-alert--success { background: rgba(100,200,100,.08); border: 1px solid rgba(100,200,100,.25); color: #8ded8d; }
+    .up-alert--canceled { background: rgba(200,100,100,.08); border: 1px solid rgba(200,100,100,.25); color: #ffb3b3; }
+    .up-alert--already { background: rgba(240,194,126,.1); border: 1px solid rgba(240,194,126,.3); color: var(--gold); }
+
+    /* Quote */
+    .up-quote { border-left: 3px solid rgba(240,194,126,.4); padding: 16px 20px; margin-bottom: 20px; }
+    .up-quote-text { font-size: 14px; color: var(--ink); line-height: 1.6; font-style: italic; opacity: .85; margin-bottom: 8px; }
+    .up-quote-attr { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body class="page-scroll">
+  <div class="ambient">
+    <div class="ambient-blob ambient-blob--a"></div>
+    <div class="ambient-blob ambient-blob--b"></div>
+    <div class="ambient-blob ambient-blob--c"></div>
+    <div class="ambient-grain"></div>
+  </div>
+
+  <div class="topbar">
+    <div class="brand">
+      <img class="logo" src="/logo.png" alt="Taste Manna" width="32" height="32" />
+      <span>Taste Manna</span>
+    </div>
+    <nav class="page-nav">
+      <a href="/index.html" class="page-nav-link">For You</a>
+      <a href="/home.html" class="page-nav-link">Home</a>
+      <a href="/leaderboard.html" class="page-nav-link">Leaderboard</a>
+      <a href="/upgrade.html" class="page-nav-link active">Premium</a>
+      <a href="/donate.html" class="page-nav-link">Donate</a>
+    </nav>
+    <div class="topbar-right">
+      <button class="account-btn" id="accountBtn"></button>
+    </div>
+  </div>
+
+  <div class="up-wrap">
+    <div id="alertBox"></div>
+
+    <div class="up-hero">
+      <div class="up-badge">Premium</div>
+      <h1 class="up-title">Go deeper into<br><em>God's Word</em></h1>
+      <p class="up-sub">Unlock AI-powered study tools that help you understand, reflect, and grow — every single day.</p>
+    </div>
+
+    <div class="up-card">
+      <div class="up-price-row">
+        <span class="up-price-amt">$4.99</span>
+        <span class="up-price-per">/ month</span>
+      </div>
+      <div class="up-price-note">Cancel anytime. No long-term commitment.</div>
+
+      <div class="up-features">
+        <div class="up-feature">
+          <div class="up-feature-dot"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+          <div class="up-feature-text">
+            <div class="up-feature-title">AI Chat & Bible Q&A</div>
+            <div class="up-feature-desc">Ask any question about Scripture and get a context-aware answer instantly.</div>
+          </div>
+        </div>
+        <div class="up-feature">
+          <div class="up-feature-dot"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+          <div class="up-feature-text">
+            <div class="up-feature-title">Unlimited Devotionals</div>
+            <div class="up-feature-desc">Generate a fresh personal devotional for any Bible topic, person, or passage.</div>
+          </div>
+        </div>
+        <div class="up-feature">
+          <div class="up-feature-dot"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+          <div class="up-feature-text">
+            <div class="up-feature-title">AI Study Plans</div>
+            <div class="up-feature-desc">A structured multi-day reading plan tailored to any topic you want to explore.</div>
+          </div>
+        </div>
+        <div class="up-feature">
+          <div class="up-feature-dot"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+          <div class="up-feature-text">
+            <div class="up-feature-title">Bible Knowledge Quizzes</div>
+            <div class="up-feature-desc">Test your understanding with AI-generated quizzes on any biblical topic.</div>
+          </div>
+        </div>
+        <div class="up-feature">
+          <div class="up-feature-dot"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+          <div class="up-feature-text">
+            <div class="up-feature-title">Ad-Free Reading</div>
+            <div class="up-feature-desc">Explore Scripture without any sponsored posts interrupting your focus.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="up-btn" id="upgradeBtn">Start Premium — $4.99/mo</button>
+      <p class="up-btn-note">Secure payment by Stripe. Cancel in one click from your account settings.</p>
+    </div>
+
+    <div class="up-quote">
+      <div class="up-quote-text">"Man shall not live by bread alone, but by every word that comes from the mouth of God."</div>
+      <div class="up-quote-attr">— Matthew 4:4</div>
+    </div>
+
+    <div class="up-divider">
+      <div class="up-divider-line"></div>
+      <div class="up-divider-text">What's included</div>
+      <div class="up-divider-line"></div>
+    </div>
+
+    <div class="up-table">
+      <div class="up-table-head">
+        <div></div>
+        <div class="up-table-head-free">Free</div>
+        <div class="up-table-head-pro">Premium</div>
+      </div>
+      <div class="up-table-row">
+        <div class="up-table-feat">Bible discovery feed</div>
+        <div class="up-table-free">✓</div>
+        <div class="up-table-pro">✓</div>
+      </div>
+      <div class="up-table-row">
+        <div class="up-table-feat">Community & prayer</div>
+        <div class="up-table-free">✓</div>
+        <div class="up-table-pro">✓</div>
+      </div>
+      <div class="up-table-row">
+        <div class="up-table-feat">Reading plans</div>
+        <div class="up-table-free">✓</div>
+        <div class="up-table-pro">✓</div>
+      </div>
+      <div class="up-table-row">
+        <div class="up-table-feat">Cross-references</div>
+        <div class="up-table-free">✓</div>
+        <div class="up-table-pro">✓</div>
+      </div>
+      <div class="up-table-row">
+        <div class="up-table-feat">AI Chat & Q&A</div>
+        <div class="up-table-free">—</div>
+        <div class="up-table-pro">✓</div>
+      </div>
+      <div class="up-table-row">
+        <div class="up-table-feat">Devotionals</div>
+        <div class="up-table-free">—</div>
+        <div class="up-table-pro">✓</div>
+      </div>
+      <div class="up-table-row">
+        <div class="up-table-feat">Study plans</div>
+        <div class="up-table-free">—</div>
+        <div class="up-table-pro">✓</div>
+      </div>
+      <div class="up-table-row">
+        <div class="up-table-feat">Quizzes</div>
+        <div class="up-table-free">—</div>
+        <div class="up-table-pro">✓</div>
+      </div>
+      <div class="up-table-row">
+        <div class="up-table-feat">Ad-free reading</div>
+        <div class="up-table-free">—</div>
+        <div class="up-table-pro">✓</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="welcome"></div>
+
+  <nav class="bottom-nav">
+    <a href="/index.html" class="bottom-nav-item"><div class="bottom-nav-label">For You</div></a>
+    <a href="/home.html" class="bottom-nav-item"><div class="bottom-nav-label">Home</div></a>
+    <a href="/leaderboard.html" class="bottom-nav-item"><div class="bottom-nav-label">Leaderboard</div></a>
+    <a href="/upgrade.html" class="bottom-nav-item active"><div class="bottom-nav-label">Premium</div></a>
+    <a href="/donate.html" class="bottom-nav-item"><div class="bottom-nav-label">Donate</div></a>
+  </nav>
+
+  <script type="module">
+    import { initPageAccount } from "/src/core/pageAccount.js";
+    import { openAuthPanel } from "/src/ui/components/welcome.js";
+
+    const pageAccount = await initPageAccount(document.getElementById("accountBtn"));
+    const session = pageAccount?.getSession();
+
+    const params = new URLSearchParams(window.location.search);
+    const alertBox = document.getElementById("alertBox");
+
+    if (params.get("success") === "true") {
+      alertBox.innerHTML = `<div class="up-alert up-alert--success">Welcome to Premium! Your AI features are now unlocked.</div>`;
+      history.replaceState({}, "", "/upgrade.html");
+    } else if (params.get("canceled") === "true") {
+      alertBox.innerHTML = `<div class="up-alert up-alert--canceled">No charge was made. You can upgrade anytime.</div>`;
+      history.replaceState({}, "", "/upgrade.html");
+    }
+
+    const btn = document.getElementById("upgradeBtn");
+
+    if (session?.user) {
+      try {
+        const status = await fetch("/api/subscribe", { credentials: "same-origin" }).then(r => r.json());
+        if (status?.isPremium) {
+          alertBox.innerHTML = `<div class="up-alert up-alert--already">You are already a Premium member. Thank you for supporting Taste Manna!</div>`;
+          btn.textContent = "You are Premium";
+          btn.disabled = true;
+        }
+      } catch {}
+    }
+
+    btn.addEventListener("click", async () => {
+      if (!session?.user) {
+        openAuthPanel({ mode: "login", dismissible: true });
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = "Redirecting to Stripe…";
+      try {
+        const res = await fetch("/api/subscribe", { method: "POST", credentials: "same-origin" });
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert(data.error || "Something went wrong. Please try again.");
+          btn.disabled = false;
+          btn.textContent = "Start Premium — $4.99/mo";
+        }
+      } catch {
+        alert("Network error. Please try again.");
+        btn.disabled = false;
+        btn.textContent = "Start Premium — $4.99/mo";
+      }
+    });
+  </script>
+</body>
+</html>

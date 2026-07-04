@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Friends — Taste Manna</title>
+  <link rel="icon" href="/assets/logo-64.png" type="image/png" />
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .friends-header { margin-bottom: 32px; }
+    .friends-title { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .friends-subtitle { font-size: 14px; color: var(--muted); }
+
+    .friends-tabs { display: flex; gap: 12px; margin-bottom: 28px; border-bottom: 1px solid var(--glass-border); }
+    .friends-tab { border: none; background: transparent; color: var(--muted); font-size: 14px; font-weight: 600; padding: 12px 4px; cursor: pointer; transition: all .2s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .friends-tab:hover { color: var(--ink); }
+    .friends-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    .friends-grid { display: flex; flex-direction: column; gap: 12px; }
+    .friend-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: rgba(255,255,255,.02); border: 1px solid var(--glass-border); border-radius: 10px; transition: all .2s; }
+    .friend-item:hover { background: rgba(255,255,255,.04); border-color: var(--gold); }
+
+    .friend-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(201,161,74,.2), rgba(201,161,74,.1)); display: flex; align-items: center; justify-content: center; color: var(--gold); font-weight: 700; flex-shrink: 0; overflow: hidden; }
+    .friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .friend-info { flex: 1; min-width: 0; }
+    .friend-name { font-weight: 600; color: var(--ink); font-size: 14px; }
+    .friend-email { font-size: 12px; color: var(--muted); }
+
+    .friend-actions { display: flex; gap: 8px; }
+    .friend-btn { border: none; background: transparent; color: var(--gold); cursor: pointer; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; transition: all .2s; }
+    .friend-btn:hover { background: rgba(201,161,74,.1); }
+    .friend-btn--danger { color: #ff6b6b; }
+    .friend-btn--danger:hover { background: rgba(255,107,107,.1); }
+
+    .friends-empty { text-align: center; color: var(--muted); font-size: 14px; padding: 64px 24px; }
+    .friends-empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .friends-loading { text-align: center; color: var(--muted); font-size: 14px; padding: 64px 24px; }
+  </style>
+</head>
+<body class="page-scroll">
+  <div class="ambient">
+    <div class="ambient-blob ambient-blob--a"></div>
+    <div class="ambient-blob ambient-blob--b"></div>
+    <div class="ambient-blob ambient-blob--c"></div>
+    <div class="ambient-grain"></div>
+  </div>
+
+  <div class="topbar">
+    <div class="brand">
+      <img class="logo" src="/logo.png" alt="" width="32" height="32" />
+      <span>Taste Manna</span>
+    </div>
+    <nav class="page-nav">
+      <a href="/index.html" class="page-nav-link">For You</a>
+      <a href="/home.html" class="page-nav-link">Home</a>
+      <a href="/leaderboard.html" class="page-nav-link">Leaderboard</a>
+      <a href="/upgrade.html" class="page-nav-link">Premium</a>
+      <a href="/donate.html" class="page-nav-link">Donate</a>
+    </nav>
+    <div class="topbar-right">
+      <button class="account-btn" id="accountBtn"></button>
+    </div>
+  </div>
+
+  <div class="container main-with-nav" style="padding-top: 80px; max-width: 680px; margin: 0 auto;">
+    <div class="friends-header">
+      <h1 class="friends-title">Friends</h1>
+      <p class="friends-subtitle">Connect with others in the Taste Manna community</p>
+    </div>
+
+    <div class="friends-tabs">
+      <button class="friends-tab active" data-tab="friends">Friends</button>
+      <button class="friends-tab" data-tab="incoming">Requests</button>
+      <button class="friends-tab" data-tab="outgoing">Pending</button>
+    </div>
+
+    <div id="friendsContent" class="friends-grid">
+      <div class="friends-loading">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <a href="/index.html" class="bottom-nav-item"><div class="bottom-nav-label">For You</div></a>
+    <a href="/home.html" class="bottom-nav-item"><div class="bottom-nav-label">Home</div></a>
+    <a href="/leaderboard.html" class="bottom-nav-item"><div class="bottom-nav-label">Leaderboard</div></a>
+    <a href="/upgrade.html" class="bottom-nav-item"><div class="bottom-nav-label">Premium</div></a>
+    <a href="/donate.html" class="bottom-nav-item"><div class="bottom-nav-label">Donate</div></a>
+  </nav>
+
+  <div id="welcome"></div>
+
+  <script type="module">
+    import { initPageAccount } from "/src/core/pageAccount.js";
+    import { openAuthPanel } from "/src/ui/components/welcome.js";
+
+    const pageAccount = await initPageAccount(document.getElementById("accountBtn"));
+    const session = pageAccount?.getSession();
+
+    if (!session?.user) {
+      document.getElementById("friendsContent").innerHTML =
+        `<div class="friends-empty"><div class="friends-empty-icon">👥</div><p>Sign in to view your friends</p><button class="cm-mini cm-mini--primary" id="signInBtn" style="margin-top:16px">Sign in</button></div>`;
+      document.getElementById("signInBtn")?.addEventListener("click", () => openAuthPanel({ mode: "login", dismissible: true }));
+    } else {
+      let data = null;
+      let activeTab = "friends";
+
+      async function load() {
+        const res = await fetch("/api/friends", { credentials: "same-origin" });
+        if (!res.ok) {
+          document.getElementById("friendsContent").innerHTML = `<div class="friends-empty"><div class="friends-empty-icon">⚠️</div>Couldn't load friends</div>`;
+          return;
+        }
+        data = await res.json();
+        render();
+      }
+
+      function renderFriendItem(user, actions = "") {
+        const initial = (user.displayName || user.email || "U")[0].toUpperCase();
+        const avatar = user.avatarUrl
+          ? `<img src="${user.avatarUrl}" alt="" />`
+          : `<span>${initial}</span>`;
+        return `<div class="friend-item">
+          <div class="friend-avatar">${avatar}</div>
+          <div class="friend-info">
+            <div class="friend-name">${user.displayName || user.email}</div>
+            <div class="friend-email">${user.email}</div>
+          </div>
+          <div class="friend-actions">${actions}</div>
+        </div>`;
+      }
+
+      function render() {
+        const container = document.getElementById("friendsContent");
+        let items = [];
+
+        if (activeTab === "friends") {
+          items = (data.friends || []).map(u => renderFriendItem(u, 
+            `<button class="friend-btn friend-btn--danger" data-remove="${u.id}">Remove</button>`
+          ));
+        } else if (activeTab === "incoming") {
+          items = (data.incoming || []).map(u => renderFriendItem(u,
+            `<button class="friend-btn" data-accept="${u.id}">Accept</button>
+             <button class="friend-btn friend-btn--danger" data-decline="${u.id}">Decline</button>`
+          ));
+        } else if (activeTab === "outgoing") {
+          items = (data.outgoing || []).map(u => renderFriendItem(u,
+            `<button class="friend-btn friend-btn--danger" data-cancel="${u.id}">Cancel</button>`
+          ));
+        }
+
+        if (!items.length) {
+          const messages = {
+            friends: { icon: "👥", text: "No friends yet" },
+            incoming: { icon: "📨", text: "No pending requests" },
+            outgoing: { icon: "⏳", text: "No pending requests" }
+          };
+          const msg = messages[activeTab];
+          container.innerHTML = `<div class="friends-empty"><div class="friends-empty-icon">${msg.icon}</div>${msg.text}</div>`;
+          return;
+        }
+
+        container.innerHTML = items.join("");
+
+        // Wire up action buttons
+        container.querySelectorAll("[data-accept]").forEach(btn => {
+          btn.addEventListener("click", () => friendAction(btn.dataset.accept, "accept", btn));
+        });
+        container.querySelectorAll("[data-decline]").forEach(btn => {
+          btn.addEventListener("click", () => friendAction(btn.dataset.decline, "decline", btn));
+        });
+        container.querySelectorAll("[data-remove]").forEach(btn => {
+          btn.addEventListener("click", () => friendAction(btn.dataset.remove, "decline", btn));
+        });
+        container.querySelectorAll("[data-cancel]").forEach(btn => {
+          btn.addEventListener("click", () => friendAction(btn.dataset.cancel, "decline", btn));
+        });
+      }
+
+      async function friendAction(userId, action, btn) {
+        btn.disabled = true;
+        btn.textContent = action === "accept" ? "Accepting…" : "Processing…";
+        const res = await fetch("/api/friends", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ targetUserId: userId, action }),
+        });
+        if (res.ok) {
+          await load();
+        } else {
+          btn.disabled = false;
+          btn.textContent = action === "accept" ? "Accept" : action === "decline" ? "Decline" : "Cancel";
+        }
+      }
+
+      document.querySelectorAll(".friends-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".friends-tab").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeTab = btn.dataset.tab;
+          render();
+        });
+      });
+
+      await load();
+    }
+  </script>
+</body>
+</html>

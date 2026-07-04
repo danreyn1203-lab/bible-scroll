@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Taste Manna Leaderboards - Compete by XP, Streak, and Engagement">
+  <title>Leaderboards — Taste Manna</title>
+  <link rel="icon" href="/assets/logo-64.png" type="image/png" />
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .lb-hero { background: linear-gradient(135deg, rgba(102,126,234,.15), rgba(118,75,162,.15)); border: 1px solid rgba(201,161,74,.3); border-radius: 20px; padding: 32px 24px; margin-bottom: 32px; text-align: center; }
+    .lb-hero-title { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, var(--gold), #667eea); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+    .lb-hero-sub { font-size: 14px; color: var(--muted); }
+    .lb-tabs { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 8px; }
+    .lb-tab { background: rgba(255,255,255,.04); border: 1.5px solid var(--glass-border); color: var(--muted); padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all .2s; white-space: nowrap; }
+    .lb-tab:hover { background: rgba(255,255,255,.08); }
+    .lb-tab.active { background: var(--gold); color: #2a1d05; border-color: var(--gold); }
+    .lb-container { display: grid; gap: 12px; }
+    .lb-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; background: linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border: 1px solid var(--glass-border); border-radius: 14px; padding: 16px; transition: all .2s; }
+    .lb-card:hover { background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.04)); border-color: var(--gold); transform: translateX(4px); }
+    .lb-rank { font-size: 28px; font-weight: 800; text-align: center; min-width: 48px; }
+    .lb-avatar-box { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(102,126,234,.3), rgba(118,75,162,.3)); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--gold); font-size: 18px; flex-shrink: 0; border: 2px solid rgba(201,161,74,.2); overflow: hidden; }
+    .lb-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+    .lb-info { min-width: 0; }
+    .lb-name { font-weight: 700; color: var(--ink); font-size: 14px; }
+    .lb-level { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .lb-stats { display: flex; gap: 20px; text-align: right; }
+    .lb-stat-value { font-size: 18px; font-weight: 800; color: var(--gold); }
+    .lb-stat-label { font-size: 10px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+    .lb-empty { text-align: center; padding: 48px 24px; }
+    .lb-info-box { background: rgba(102,126,234,.05); border: 1px solid rgba(102,126,234,.2); border-radius: 12px; padding: 16px; margin-bottom: 24px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+    @media (max-width: 600px) {
+      .lb-hero-title { font-size: 28px; }
+      .lb-stats { gap: 12px; }
+    }
+  </style>
+</head>
+<body class="page-scroll">
+  <div class="ambient">
+    <div class="ambient-blob ambient-blob--a"></div>
+    <div class="ambient-blob ambient-blob--b"></div>
+    <div class="ambient-blob ambient-blob--c"></div>
+    <div class="ambient-grain"></div>
+  </div>
+
+  <div class="topbar">
+    <div class="brand">
+      <img class="logo" src="/logo.png" alt="" width="32" height="32" />
+      <span>Taste Manna</span>
+    </div>
+    <nav class="page-nav">
+      <a href="/index.html" class="page-nav-link">For You</a>
+      <a href="/home.html" class="page-nav-link">Home</a>
+      <a href="/leaderboard.html" class="page-nav-link active">Leaderboard</a>
+      <a href="/upgrade.html" class="page-nav-link">Premium</a>
+      <a href="/donate.html" class="page-nav-link">Donate</a>
+    </nav>
+    <div class="topbar-right">
+      <button class="account-btn" id="accountBtn"></button>
+    </div>
+  </div>
+
+  <div class="container main-with-nav" style="padding-top: 80px;">
+    <div class="lb-hero">
+      <div class="lb-hero-title">LEADERBOARDS</div>
+      <div class="lb-hero-sub">Character first. Numbers follow.</div>
+    </div>
+
+    <div class="lb-info-box">
+      <strong>Integrity is the score that matters.</strong> Rankings here reward depth of Bible study, consistency of reading, and service to the community — not popularity or post count. "It takes 20 years to build a reputation and five minutes to ruin it." — Warren Buffett
+    </div>
+
+    <div class="lb-tabs">
+      <button class="lb-tab active" data-type="integrity">Integrity</button>
+      <button class="lb-tab" data-type="xp">XP Points</button>
+      <button class="lb-tab" data-type="streak">Reading Streak</button>
+      <button class="lb-tab" data-type="social">Engagement</button>
+    </div>
+
+    <div class="lb-container" id="leaderboardList"></div>
+  </div>
+
+  <div id="welcome"></div>
+
+  <nav class="bottom-nav">
+    <a href="/index.html" class="bottom-nav-item"><div class="bottom-nav-label">For You</div></a>
+    <a href="/home.html" class="bottom-nav-item"><div class="bottom-nav-label">Home</div></a>
+    <a href="/leaderboard.html" class="bottom-nav-item active"><div class="bottom-nav-label">Leaderboard</div></a>
+    <a href="/upgrade.html" class="bottom-nav-item"><div class="bottom-nav-label">Premium</div></a>
+    <a href="/donate.html" class="bottom-nav-item"><div class="bottom-nav-label">Donate</div></a>
+  </nav>
+
+  <script type="module">
+    import { initPageAccount } from "/src/core/pageAccount.js";
+
+    async function loadLeaderboard(type = 'integrity') {
+      const list = document.getElementById("leaderboardList");
+      list.innerHTML = '<div class="lb-empty"><div style="font-size: 24px; margin-bottom: 8px;">...</div><div>Loading...</div></div>';
+
+      try {
+        const data = await fetch(`/api/leaderboard?type=${type}&limit=50`).then(r => r.json());
+
+        if (!data?.length) {
+          list.innerHTML = '<div class="lb-empty"><div style="font-size: 13px; color: var(--muted);">No activity yet — start reading and engaging to appear here.</div></div>';
+          return;
+        }
+
+        list.innerHTML = '';
+        data.forEach((entry, i) => {
+          const rank = i + 1;
+          const badge = rank === 1 ? '#1' : rank === 2 ? '#2' : rank === 3 ? '#3' : `#${rank}`;
+          const rankColor = rank === 1 ? 'var(--gold)' : rank === 2 ? '#aaa' : rank === 3 ? '#cd7f32' : 'var(--muted)';
+
+          let value, label, sublabel;
+          if (type === 'integrity') {
+            value = (entry.integrityScore || 0).toLocaleString();
+            label = 'Integrity Score';
+            sublabel = 'Bible study + consistency + community';
+          } else if (type === 'xp') {
+            value = (entry.totalXP || 0).toLocaleString();
+            label = 'XP';
+            sublabel = `Level ${entry.level || 1}`;
+          } else if (type === 'streak') {
+            value = entry.streakDays || 0;
+            label = 'Reading Days';
+            sublabel = 'Active reading sessions';
+          } else {
+            value = ((entry.likes || 0) + (entry.comments || 0)).toLocaleString();
+            label = 'Engagements';
+            sublabel = `${entry.posts || 0} posts`;
+          }
+
+          const initial = (entry.displayName || 'U').charAt(0).toUpperCase();
+          const avatar = entry.avatarUrl ? `<img src="${entry.avatarUrl}" alt="">` : initial;
+
+          list.insertAdjacentHTML('beforeend', `
+            <div class="lb-card">
+              <div class="lb-rank" style="color:${rankColor}">${badge}</div>
+              <div style="display:flex;gap:12px;align-items:center;min-width:0;flex:1">
+                <div class="lb-avatar-box">${avatar}</div>
+                <div class="lb-info">
+                  <div class="lb-name">${entry.displayName || 'Anonymous'}</div>
+                  <div class="lb-level">${sublabel}</div>
+                </div>
+              </div>
+              <div class="lb-stats">
+                <div>
+                  <div class="lb-stat-value">${value}</div>
+                  <div class="lb-stat-label">${label}</div>
+                </div>
+              </div>
+            </div>
+          `);
+        });
+      } catch (err) {
+        list.innerHTML = '<div class="lb-empty"><div style="font-size: 13px; color: var(--muted);">Error loading leaderboard.</div></div>';
+      }
+    }
+
+    document.querySelectorAll('.lb-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        loadLeaderboard(tab.dataset.type);
+      });
+    });
+
+    initPageAccount(document.getElementById('accountBtn'));
+    loadLeaderboard('integrity');
+  </script>
+</body>
+</html>

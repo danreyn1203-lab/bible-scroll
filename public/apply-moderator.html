@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Apply to moderate · Taste Manna</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  body { background: #0c0a14; color: #ece8d8; font-family: -apple-system, system-ui, sans-serif; margin: 0; }
+  .apply-shell { max-width: 640px; margin: 0 auto; padding: 40px 20px 80px; }
+  .apply-head h1 { color: #c9a14a; margin: 0 0 8px; font-size: 28px; }
+  .apply-head p { color: #a8a395; margin: 0 0 32px; line-height: 1.6; }
+  .apply-form { display: flex; flex-direction: column; gap: 16px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 24px; }
+  .apply-field label { display: block; font-size: 13px; color: #a8a395; margin-bottom: 6px; font-weight: 500; }
+  .apply-field input, .apply-field textarea { width: 100%; box-sizing: border-box; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 10px 12px; color: #ece8d8; font-size: 14px; font-family: inherit; outline: none; transition: border .15s; }
+  .apply-field input:focus, .apply-field textarea:focus { border-color: #c9a14a; }
+  .apply-field textarea { min-height: 100px; resize: vertical; }
+  .apply-submit { background: #c9a14a; color: #0c0a14; border: none; border-radius: 10px; padding: 14px; font-weight: 700; font-size: 15px; cursor: pointer; transition: opacity .15s; }
+  .apply-submit:hover { opacity: 0.9; }
+  .apply-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .apply-note { font-size: 12px; color: #7a7466; }
+  .apply-success { padding: 24px; background: rgba(122,197,122,.1); border: 1px solid rgba(122,197,122,.3); border-radius: 12px; color: #7ac57a; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="apply-shell">
+    <div class="apply-head">
+      <h1>Help moderate Taste Manna</h1>
+      <p>We're growing fast, and we need thoughtful believers to help keep the community safe and uplifting. Moderators review reported content, approve comments, and welcome new users.</p>
+    </div>
+    <div id="apply-root">
+      <form class="apply-form" id="apply-form">
+        <div class="apply-field">
+          <label for="name">Full name</label>
+          <input id="name" name="name" required maxlength="100" />
+        </div>
+        <div class="apply-field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required maxlength="200" />
+          <span class="apply-note">If your email matches an existing account, that account will be promoted on approval.</span>
+        </div>
+        <div class="apply-field">
+          <label for="age">Age (must be 18+)</label>
+          <input id="age" name="age" type="number" min="18" max="120" required />
+        </div>
+        <div class="apply-field">
+          <label for="experience">Experience with online communities or ministry</label>
+          <textarea id="experience" name="experience" required maxlength="2000" placeholder="Tell us about church involvement, online community work, etc."></textarea>
+        </div>
+        <div class="apply-field">
+          <label for="whyJoin">Why do you want to help?</label>
+          <textarea id="whyJoin" name="whyJoin" required maxlength="2000"></textarea>
+        </div>
+        <div class="apply-field">
+          <label for="references">References (optional — pastor, mentor, etc.)</label>
+          <textarea id="references" name="references" maxlength="1000" placeholder="Name, role, email (optional)"></textarea>
+        </div>
+        <button class="apply-submit" type="submit">Submit application</button>
+        <div class="apply-note">By submitting, you agree to be contacted by Taste Manna admins. We never share your info.</div>
+      </form>
+    </div>
+    <p style="margin-top: 30px; text-align: center;"><a href="/index.html" style="color: #c9a14a;">← Back to Taste Manna</a></p>
+  </div>
+  <script>
+    document.getElementById("apply-form").addEventListener("submit", async e => {
+      e.preventDefault();
+      const btn = e.target.querySelector("button");
+      btn.disabled = true;
+      btn.textContent = "Sending…";
+      const data = Object.fromEntries(new FormData(e.target));
+      data.age = parseInt(data.age, 10);
+      try {
+        const res = await fetch("/api/moderator-application", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json();
+        if (!res.ok) throw new Error(body.error || "Couldn't submit");
+        document.getElementById("apply-root").innerHTML = `
+          <div class="apply-success">
+            <h2 style="margin:0 0 8px">Application received 🙏</h2>
+            <p style="margin:0">An admin will review your application and email you within a few days.</p>
+          </div>`;
+      } catch (err) {
+        alert(err.message);
+        btn.disabled = false;
+        btn.textContent = "Submit application";
+      }
+    });
+  </script>
+</body>
+</html>

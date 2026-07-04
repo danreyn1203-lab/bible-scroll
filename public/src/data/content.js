@@ -1,0 +1,120 @@
+// Content nodes — today's "cards." Each links into the knowledge graph via
+// `links` (entity ids) and may hand-curate strong `related` content ids.
+// graph.js turns `links`/`related` into traversable edges; engine.js and
+// aiClient.js consume the graph, never this array directly, once booted.
+
+export const CATS = {
+  verse:     {label:"Verse",       icon:"📖", deco:"✝", grad:"linear-gradient(160deg,#2d2a5e,#46408f 45%,#5b53b8)"},
+  history:   {label:"History",     icon:"🏺", deco:"🏛", grad:"linear-gradient(160deg,#5c4423,#7a5a2e 45%,#9c7a3f)"},
+  theology:  {label:"Theology",    icon:"💭", deco:"✦", grad:"linear-gradient(160deg,#1f4a45,#2c655e 50%,#3b8278)"},
+  catechism: {label:"Catechism",   icon:"❓", deco:"❝", grad:"linear-gradient(160deg,#23305c,#2f4079 50%,#3e54a0)"},
+  funfact:   {label:"Did You Know",icon:"✨", deco:"★", grad:"linear-gradient(160deg,#5e2230,#7a2d3e 50%,#9c3d52)"},
+};
+
+export const CONTENT = [
+  // ---------- VERSES ----------
+  {id:"v.psalm23", c:"verse", text:"“The LORD is my shepherd; I shall not want. He makes me lie down in green pastures.”", ref:"Psalm 23:1–2", links:["book.psalms","person.david","theme.trust"]},
+  {id:"v.john316", c:"verse", text:"“For God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life.”", ref:"John 3:16", links:["book.john","person.jesus","theme.grace"]},
+  {id:"v.psalm46", c:"verse", text:"“Be still, and know that I am God.”", ref:"Psalm 46:10", links:["book.psalms","theme.trust"]},
+  {id:"v.phil413", c:"verse", text:"“I can do all things through him who strengthens me.”", ref:"Philippians 4:13", links:["book.philippians","person.paul","theme.hope"]},
+  {id:"v.prov35", c:"verse", text:"“Trust in the LORD with all your heart, and do not lean on your own understanding.”", ref:"Proverbs 3:5", links:["book.proverbs","theme.trust"]},
+  {id:"v.lam322", c:"verse", text:"“The steadfast love of the LORD never ceases; his mercies are new every morning.”", ref:"Lamentations 3:22–23", links:["book.lamentations","theme.hope","word.hesed","event.exile"]},
+  {id:"v.matt1128", c:"verse", text:"“Come to me, all who labor and are heavy laden, and I will give you rest.”", ref:"Matthew 11:28", links:["book.matthew","person.jesus","theme.suffering"]},
+  {id:"v.1pet57", c:"verse", text:"“Cast all your anxieties on him, because he cares for you.”", ref:"1 Peter 5:7", links:["book.1peter","theme.trust","theme.suffering"]},
+  {id:"v.rom828", c:"verse", text:"“And we know that for those who love God all things work together for good.”", ref:"Romans 8:28", links:["book.romans","person.paul","theme.providence"]},
+  {id:"v.psalm119", c:"verse", text:"“Your word is a lamp to my feet and a light to my path.”", ref:"Psalm 119:105", links:["book.psalms","theme.trust"]},
+  {id:"v.isa4110", c:"verse", text:"“Fear not, for I am with you; be not dismayed, for I am your God.”", ref:"Isaiah 41:10", links:["book.isaiah","theme.hope"]},
+  {id:"v.john11", c:"verse", text:"“In the beginning was the Word, and the Word was with God, and the Word was God.”", ref:"John 1:1", links:["book.john","person.jesus","doctrine.trinity"]},
+  {id:"v.psalm2714", c:"verse", text:"“Wait for the LORD; be strong, and let your heart take courage; wait for the LORD!”", ref:"Psalm 27:14", links:["book.psalms","theme.hope"]},
+  {id:"v.isa4031", c:"verse", text:"“But they who wait for the LORD shall renew their strength; they shall mount up with wings like eagles.”", ref:"Isaiah 40:31", links:["book.isaiah","theme.hope"]},
+  {id:"v.rom51", c:"verse", text:"“Therefore, since we have been justified by faith, we have peace with God through our Lord Jesus Christ.”", ref:"Romans 5:1", links:["book.romans","person.paul","theme.justification"], related:["v.gal216"]},
+  {id:"v.gal216", c:"verse", text:"“We know that a person is not justified by works of the law but through faith in Jesus Christ.”", ref:"Galatians 2:16", links:["book.galatians","person.paul","theme.justification"], related:["v.rom51"]},
+  {id:"v.isa53", c:"verse", text:"“He was pierced for our transgressions; he was crushed for our iniquities.”", ref:"Isaiah 53:5", links:["book.isaiah","event.crucifixion","theme.grace"]},
+  {id:"v.1cor1514", c:"verse", text:"“And if Christ has not been raised, then our preaching is in vain and your faith is in vain.”", ref:"1 Corinthians 15:14", links:["book.1corinthians","person.paul","event.resurrection"]},
+  {id:"v.acts1", c:"verse", text:"“But you will receive power when the Holy Spirit has come upon you, and you will be my witnesses... to the end of the earth.”", ref:"Acts 1:8", links:["book.acts","person.paul","theme.hope"], related:["v.rom51"]},
+  {id:"v.gal5", c:"verse", text:"“For freedom Christ has set us free; stand firm therefore, and do not submit again to a yoke of slavery.”", ref:"Galatians 5:1", links:["book.galatians","person.paul","theme.justification"], related:["v.gal216"]},
+  {id:"v.isa9", c:"verse", text:"“For to us a child is born, to us a son is given... and his name shall be called... Prince of Peace.”", ref:"Isaiah 9:6", links:["book.isaiah","person.jesus","theme.hope"], related:["v.isa53"]},
+  {id:"v.jer2911", c:"verse", text:"“For I know the plans I have for you, plans for welfare and not for evil, to give you a future and a hope.”", ref:"Jeremiah 29:11", links:["book.jeremiah","theme.hope","event.exile"]},
+  {id:"v.psalm51", c:"verse", text:"“Create in me a clean heart, O God, and renew a right spirit within me.”", ref:"Psalm 51:10", links:["book.psalms","person.david","theme.repentance"]},
+  {id:"v.micah6", c:"verse", text:"“He has told you, O man, what is good; and what does the LORD require of you but to do justice, and to love kindness, and to walk humbly with your God?”", ref:"Micah 6:8", links:["theme.identity","word.hesed"]},
+
+  // ---------- HISTORY ----------
+  {id:"h.romanroads", c:"history", text:"Rome's network of roads and the spread of Greek as a common language — both built for empire — became the very infrastructure Paul used to carry the gospel from Jerusalem to Rome in a single generation.", ref:"Acts 28", links:["book.acts","person.paul","period.apostolic"], related:["v.acts1"]},
+  {id:"h.galatiapeople", c:"history", text:"Galatia wasn't one city but a Roman province of mixed Celtic and Greek peoples — which is exactly why Paul's letter fights so hard against requiring Gentile converts to adopt Jewish law.", ref:"Galatians 1:2", links:["book.galatians","person.paul","period.apostolic"], related:["v.gal5"]},
+  {id:"h.isaiahscroll", c:"history", text:"The Great Isaiah Scroll from Qumran preserves the entire book virtually intact — 2,000 years old, and its wording matches the modern Hebrew text used in Bibles today to a striking degree.", ref:"Qumran, c. 125 BC", links:["book.isaiah","place.qumran","theme.scripture-reliability"], related:["h.scrolls"]},
+  {id:"h.scrolls", c:"history", text:"The Dead Sea Scrolls, discovered by a shepherd in 1947, include a copy of Isaiah over <strong>1,000 years older</strong> than any previously known Hebrew manuscript — and the text matched remarkably closely.", ref:"Qumran, c. 150 BC", links:["place.qumran","book.isaiah","theme.scripture-reliability","period.second-temple"], related:["f.translations"]},
+  {id:"h.jericho", c:"history", text:"Jericho is one of the <strong>oldest continuously inhabited cities on earth</strong>, with walls and a tower dating back roughly 11,000 years — long before the Israelites arrived.", ref:"Joshua 6", links:["place.jericho","book.joshua","period.monarchy"]},
+  {id:"h.pilatestone", c:"history", text:"Pontius Pilate was once doubted as a real figure — until 1961, when archaeologists found a limestone block in Caesarea carved with his name and title, the <strong>“Pilate Stone.”</strong>", ref:"Caesarea Maritima", links:["place.caesarea","person.pilate","theme.scripture-reliability","event.crucifixion"]},
+  {id:"h.fortyauthors", c:"history", text:"The Bible was written over roughly <strong>1,500 years by 40+ authors</strong> on three continents — kings, fishermen, a doctor, a tax collector — yet tells one unfolding story.", ref:"From Moses to John", links:["person.moses","theme.scripture-reliability"]},
+  {id:"h.hezekiahtunnel", c:"history", text:"Hezekiah's Tunnel, an 1,750-foot water channel carved through solid rock around 700 BC, still stands in Jerusalem — and an inscription describing its completion was found inside.", ref:"2 Kings 20:20", links:["person.hezekiah","place.jerusalem","book.2kings","period.monarchy"]},
+  {id:"h.p52", c:"history", text:"The earliest known fragment of the New Testament, the <strong>John Rylands Papyrus (P52)</strong>, contains a few verses of John and dates to within decades of the original writing.", ref:"c. AD 125", links:["book.john","theme.scripture-reliability","period.apostolic"]},
+  {id:"h.census", c:"history", text:"Caesar Augustus really did order a census of the Roman world — Luke names him precisely, anchoring Jesus' birth in datable imperial history.", ref:"Luke 2:1", links:["book.luke","event.census","person.jesus","theme.scripture-reliability"]},
+  {id:"h.nineveh", c:"history", text:"The ancient city of Nineveh, capital of Assyria from the book of Jonah, was so completely lost that critics doubted it existed — until its ruins were excavated in the 1840s near Mosul.", ref:"Jonah 3:3", links:["place.nineveh","book.jonah","person.jonah","theme.mercy"], related:["v.psalm23"]},
+  {id:"h.teldan", c:"history", text:"The Tel Dan Stele, found in 1993, bears the phrase <strong>“House of David”</strong> — the first reference to King David ever discovered outside the Bible.", ref:"c. 9th century BC", links:["person.david","theme.scripture-reliability","period.monarchy"]},
+  {id:"h.gutenberg", c:"history", text:"Gutenberg's first major printed book, around 1455, was the <strong>Bible</strong> — launching the movement that would put Scripture into the hands of ordinary people.", ref:"Mainz, Germany", links:["event.printing","theme.scripture-reliability"]},
+  {id:"h.biblia", c:"history", text:"The word “Bible” comes from the Greek <em>ta biblia</em>, “the books” — named for Byblos, the Phoenician port that traded the papyrus scrolls were written on.", ref:"Greek: τὰ βιβλία", links:["word.biblia"]},
+  {id:"h.exile", c:"history", text:"In 586 BC, Babylon razed Jerusalem and deported its people — the trauma that produced Lamentations, shaped Daniel and Ezekiel, and forged a hope that outlasted the empire that caused it.", ref:"2 Kings 25", links:["event.exile","book.lamentations","period.exile-return","place.jerusalem"], related:["v.lam322"]},
+  {id:"h.mesopotamia", c:"history", text:"Ancient Mesopotamia preserved its own flood story, the Epic of Gilgamesh — a hero, a boat, surviving animals. The parallel doesn't discredit Genesis; it suggests a shared memory of a real catastrophic flood, with Genesis offering the version centered on one righteous family and a covenant-keeping God.", ref:"Genesis 6–9", links:["place.mesopotamia","event.flood","person.noah","period.patriarchal"], related:["f.ark"]},
+  {id:"h.temple", c:"history", text:"David wanted to build God a permanent house in Jerusalem; God told him his son would build it instead — Solomon's Temple, completed around 957 BC, became the center of Israelite worship for centuries.", ref:"2 Samuel 7", links:["place.temple","person.david","place.jerusalem","period.monarchy"]},
+  {id:"h.arkcovenant", c:"history", text:"The Ark of the Covenant — a gold-covered wooden chest holding the stone tablets of the Law — sat in the Temple's innermost room, the Holy of Holies, where only the high priest could enter, once a year.", ref:"Exodus 25:10–22", links:["artifact.ark-covenant","place.temple","book.exodus"]},
+  {id:"h.saulsamuel", c:"history", text:"Samuel, Israel's last judge, anointed Saul as its first king at the people's request — then, years later, anointed the shepherd boy David in secret, after Saul's disobedience cost him the throne.", ref:"1 Samuel 16", links:["person.saul","person.samuel","person.david","book.1samuel","period.monarchy"]},
+
+  // ---------- THEOLOGY ----------
+  {id:"t.grace", c:"theology", text:"<strong>Grace</strong> is not God overlooking your sin — it is God absorbing the full cost of it himself, at the cross, so that mercy and justice meet in one place.", ref:"On the Cross", links:["theme.grace","event.crucifixion"], related:["v.isa53"]},
+  {id:"t.trinity", c:"theology", text:"The Trinity isn't a riddle to solve but a relationship to behold: one God eternally existing as Father, Son, and Spirit — love given and received before the world began.", ref:"On the Triune God", links:["doctrine.trinity","theologian.augustine"]},
+  {id:"t.justification", c:"theology", text:"To be “justified” means God declares you righteous — not because you've become good enough, but because Christ's righteousness is credited to you as a gift.", ref:"Romans 5:1", links:["theme.justification","book.romans","theologian.luther"], related:["v.rom51","v.gal216"]},
+  {id:"t.gospel", c:"theology", text:"The gospel is not advice on how to climb to God. It is news that God has climbed down to us. Religion says <em>do</em>; the gospel says <strong>done</strong>.", ref:"On the Good News", links:["theme.grace","person.jesus","theologian.luther"]},
+  {id:"t.repentance", c:"theology", text:"Repentance isn't mainly feeling sorry — it's a change of direction, turning from self-rule to walk toward the God who is already running to meet you.", ref:"Luke 15:20", links:["theme.repentance","book.luke"]},
+  {id:"t.resurrection", c:"theology", text:"The resurrection is the hinge of the faith. If Christ is not raised, Paul says, our faith is futile. But if he is, then death itself has been put on notice.", ref:"1 Corinthians 15:14", links:["event.resurrection","person.paul","book.1corinthians"], related:["v.1cor1514"]},
+  {id:"t.imagodei", c:"theology", text:"“Image of God” means every person you meet — the powerful and the forgotten — bears a dignity stamped by their Maker that no circumstance can erase.", ref:"Genesis 1:27", links:["doctrine.imago-dei","book.genesis"]},
+  {id:"t.faith", c:"theology", text:"Faith is not certainty without doubt; it is trust that keeps walking. Even the father who cried, <em>“I believe; help my unbelief!”</em> was welcomed.", ref:"Mark 9:24", links:["theme.trust","book.mark"]},
+  {id:"t.sanctification", c:"theology", text:"Sanctification is slow on purpose. God is not just forgiving you; he is making you — patiently shaping a soul into the likeness of his Son.", ref:"Philippians 1:6", links:["doctrine.sanctification","book.philippians","theologian.aquinas"]},
+  {id:"t.newcreation", c:"theology", text:"Heaven is not finally about escaping earth, but about heaven coming down — a renewed creation where God dwells with his people and wipes every tear.", ref:"Revelation 21:3–4", links:["doctrine.new-creation","book.revelation"]},
+  {id:"t.providence", c:"theology", text:"Providence is God's quiet government of everything — not micromanaging away your freedom, but weaving even silence and delay into a story that ends in good.", ref:"Romans 8:28", links:["theme.providence","theologian.calvin"], related:["v.rom828","f.esther"]},
+  {id:"t.covenant", c:"theology", text:"From Noah's rainbow to Abraham's stars to David's throne, God's covenants are promises he binds himself to keep — each one a step toward the new covenant sealed in Christ's blood.", ref:"Hebrews 8:6", links:["theme.covenant","word.berith","person.noah"], related:["h.mesopotamia"]},
+
+  // ---------- CATECHISM ----------
+  {id:"cat.chiefend", c:"catechism", text:"What is the chief end of man?", answer:"Man's chief end is to glorify God, and to enjoy him forever.", ref:"Westminster Shorter Catechism, Q.1", links:["theme.identity"]},
+  {id:"cat.comfort", c:"catechism", text:"What is your only comfort in life and in death?", answer:"That I am not my own, but belong — body and soul, in life and in death — to my faithful Savior, Jesus Christ.", ref:"Heidelberg Catechism, Q.1", links:["person.jesus","theme.identity"]},
+  {id:"cat.whatisgod", c:"catechism", text:"What is God?", answer:"God is a Spirit, infinite, eternal, and unchangeable, in his being, wisdom, power, holiness, justice, goodness, and truth.", ref:"Westminster Shorter Catechism, Q.4", links:["doctrine.trinity"]},
+  {id:"cat.rightwithgod", c:"catechism", text:"How can you be right with God?", answer:"Only by true faith in Jesus Christ — God credits to me the perfect satisfaction and righteousness of Christ, as if I had never sinned.", ref:"Heidelberg Catechism, Q.60", links:["theme.justification"], related:["t.justification"]},
+  {id:"cat.spirit", c:"catechism", text:"What do we believe about the Holy Spirit?", answer:"That he is the Lord and Giver of life, who proceeds from the Father and the Son, and who applies redemption to us.", ref:"Nicene Creed (paraphrased)", links:["doctrine.trinity"]},
+  {id:"cat.gracehelp", c:"catechism", text:"How does the grace of God help us?", answer:"Grace pardons our sin, renews us in the image of God, and enables us to do good works out of gratitude, not fear.", ref:"On Saving Grace", links:["theme.grace","doctrine.imago-dei"]},
+  {id:"cat.prayer", c:"catechism", text:"What is prayer?", answer:"Prayer is an offering up of our desires unto God, for things agreeable to his will, in the name of Christ, with confession and thanksgiving.", ref:"Westminster Shorter Catechism, Q.98", links:["theme.trust"]},
+  {id:"cat.incarnation", c:"catechism", text:"Why did the Son of God become man?", answer:"So that the same human nature that sinned might pay for sin, and that a truly righteous man might bear God's wrath in our place.", ref:"Heidelberg Catechism, Q.16", links:["person.jesus","theme.grace"]},
+
+  // ---------- FUN FACTS ----------
+  {id:"f.jesuswept", c:"funfact", text:"The shortest verse in most English Bibles is just two words: <strong>“Jesus wept.”</strong> — proof that the Son of God grieved at a friend's grave.", ref:"John 11:35", links:["person.jesus","book.john","theme.suffering"]},
+  {id:"f.jeremiahlongest", c:"funfact", text:"The longest book in the Bible by word count is the book of <strong>Jeremiah</strong>, even though Psalms has far more chapters.", ref:"Old Testament", links:["book.jeremiah"]},
+  {id:"f.methuselah", c:"funfact", text:"The Bible names a man named <strong>Methuselah</strong> who lived 969 years — the oldest age recorded in Scripture.", ref:"Genesis 5:27", links:["person.methuselah","book.genesis"]},
+  {id:"f.esther", c:"funfact", text:"There's a whole book of the Bible — <strong>Esther</strong> — that never once mentions the name of God, yet his providence runs through every page.", ref:"Book of Esther", links:["book.esther","person.esther","theme.providence"], related:["t.providence"]},
+  {id:"f.balaam", c:"funfact", text:"A talking donkey appears in the Bible — it rebuked the prophet Balaam when he couldn't see the angel standing in the road.", ref:"Numbers 22:28", links:["person.balaam","book.numbers"]},
+  {id:"f.psalm118", c:"funfact", text:"Psalm 118 sits almost exactly at the center of the Bible, and Psalm 118:8 carries a fitting message: <em>“It is better to take refuge in the LORD than to trust in man.”</em>", ref:"Psalm 118:8", links:["book.psalms","theme.trust"]},
+  {id:"f.magi", c:"funfact", text:"The wise men in the Christmas story are <strong>never numbered</strong> in the Bible — “three” comes from the three gifts: gold, frankincense, and myrrh.", ref:"Matthew 2:11", links:["book.matthew","person.jesus"]},
+  {id:"f.translations", c:"funfact", text:"The Bible has been translated, in whole or part, into more than <strong>3,600 languages</strong> — by far the most translated book in human history.", ref:"Did You Know", links:["theme.scripture-reliability"]},
+  {id:"f.ark", c:"funfact", text:"Noah's ark was about 450 feet long — roughly the length of <strong>one and a half football fields</strong>.", ref:"Genesis 6:15", links:["book.genesis","person.noah","event.flood"],
+    continue:[
+      {label:"Flood archaeology", kind:"content", ref:"h.mesopotamia"},
+      {label:"Ancient Mesopotamia", kind:"entity", ref:"place.mesopotamia"},
+      {label:"Covenants", kind:"content", ref:"t.covenant"},
+      {label:"Genesis timeline", kind:"entity", ref:"period.patriarchal"},
+      {label:"Animal symbolism", kind:"content", ref:"f.animalsymbolism"},
+      {label:"Hebrew word study", kind:"content", ref:"f.tevah"},
+    ]},
+  {id:"f.forbiddenfruit", c:"funfact", text:"The forbidden fruit in Eden is famously called an apple — but the Bible never actually says what kind of fruit it was.", ref:"Genesis 3", links:["place.eden","book.genesis"]},
+  {id:"f.goliath", c:"funfact", text:"Goliath stood “six cubits and a span” — roughly <strong>9 feet 9 inches</strong> tall — when a shepherd boy with a sling brought him down.", ref:"1 Samuel 17:4", links:["person.goliath","person.david","book.1samuel"],
+    continue:[
+      {label:"Saul", kind:"entity", ref:"person.saul"},
+      {label:"Samuel", kind:"entity", ref:"person.samuel"},
+      {label:"Temple", kind:"content", ref:"h.temple"},
+      {label:"Psalms", kind:"entity", ref:"book.psalms"},
+      {label:"Ark of the Covenant", kind:"content", ref:"h.arkcovenant"},
+      {label:"Historical maps", kind:"stub", ref:"feature.maps"},
+      {label:"Family tree", kind:"content", ref:"f.genealogy"},
+    ]},
+  {id:"f.tevah", c:"funfact", text:"The Hebrew word for Noah's “ark,” <em>tevah</em>, appears in only one other story: the little basket that carried baby Moses down the Nile. Two vessels, two rescues, one word.", ref:"Genesis 6:14 / Exodus 2:3", links:["word.teba","person.noah","book.exodus"]},
+  {id:"f.genealogy", c:"funfact", text:"Matthew opens his Gospel with a genealogy tracing Jesus back through <strong>David</strong> to Abraham — a family tree built to prove one thing: this is the promised King.", ref:"Matthew 1:1–17", links:["person.david","person.jesus","book.matthew"]},
+  {id:"f.animalsymbolism", c:"funfact", text:"Scripture is full of animal symbolism: a lion for the tribe of Judah, a lamb for the sacrifice, a dove for the Spirit — the same creature can mean something different depending on the story.", ref:"Revelation 5:5–6", links:["theme.symbolism","person.jesus","book.revelation"]},
+];
+
+export const contentIndex = new Map(CONTENT.map(d => [d.id, d]));

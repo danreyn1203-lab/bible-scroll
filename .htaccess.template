@@ -1,0 +1,51 @@
+# SEO-optimized .htaccess for Apache servers
+# Copy to your Apache root and update domain references
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # HTTPS redirect
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Remove www
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+  # Remove trailing slash
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.+)/$ $1 [R=301,L]
+
+  # Disable directory listing
+  Options -Indexes
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# Gzip compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/json application/javascript
+</IfModule>
+
+# Cache control
+<FilesMatch "\.(jpg|jpeg|png|gif|svg|webp|ico|woff|woff2|ttf|eot)$">
+  Header set Cache-Control "max-age=31536000, public, immutable"
+</FilesMatch>
+
+<FilesMatch "\.(html|htm|css|js|json)$">
+  Header set Cache-Control "max-age=3600, public"
+</FilesMatch>
+
+# Block common bot patterns
+<FilesMatch "\.(env|config|log|sql|yml|yaml)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>

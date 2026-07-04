@@ -1,0 +1,472 @@
+// Phase 1 schema — the same knowledge-graph model from the Manna prototype
+// (entities + content + edges), now backed by a real database with accounts,
+// so likes/saves/progress survive across devices instead of living only in
+// one browser's localStorage.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ContentCategory {
+  verse
+  history
+  theology
+  catechism
+  funfact
+}
+
+enum ModerationStatus {
+  visible
+  flagged
+  removed
+}
+
+enum EntityType {
+  book
+  person
+  place
+  event
+  theme
+  doctrine
+  word
+  period
+  theologian
+  artifact
+}
+
+model User {
+  id                   String    @id @default(cuid())
+  email                String    @unique
+  passwordHash         String
+  displayName          String?
+  avatarUrl            String?
+  bio                  String?
+  twoFactorEnabled     Boolean   @default(false)
+  preferredTranslation String    @default("ESV")
+  role                 UserRole  @default(user)
+  bannedAt             DateTime?
+  banReason            String?
+  ageRange             String? // legacy — keep nullable for back-compat
+  age                  Int?
+  country              String?
+  city                 String?
+  denomination         String? // "Catholic","Protestant","Orthodox","Other","Seeking"
+  attendsChurch        Boolean?
+
+  // Stripe subscription
+  isPremium            Boolean   @default(false)
+  premiumSince         DateTime?
+  premiumUntil         DateTime?
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+
+  passwordResets PasswordResetToken[]
+  loginCodes     LoginCode[]
+  createdAt            DateTime  @default(now())
+
+  likes          UserLike[]
+  saves          UserSave[]
+  annotations    Annotation[]
+  comments       Comment[]
+  readingPlans   ReadingPlan[]
+  interests      UserInterest[]
+  sentRequests   Friendship[]     @relation("FriendshipFrom")
+  recvRequests   Friendship[]     @relation("FriendshipTo")
+  groupMembers   GroupMember[]
+  prayerRequests PrayerRequest[]
+  posts          Post[]
+  achievements   UserAchievement[]
+  xp             UserXP?
+  challenges     UserChallenge[]
+}
+
+model Entity {
+  id      String     @id // e.g. "book.romans", "person.paul"
+  type    EntityType
+  label   String
+  summary String
+
+  contentLinks ContentEntityLink[]
+  readingPlans ReadingPlan[]
+  interests    UserInterest[]
+}
+
+model Content {
+  id       String          @id // e.g. "v.rom51"
+  category ContentCategory
+  text     String
+  answer   String? // catechism answers only
+  ref      String
+
+  entityLinks ContentEntityLink[]
+
+  relatedFrom ContentRelated[] @relation("RelatedFrom")
+  relatedTo   ContentRelated[] @relation("RelatedTo")
+
+  likedBy     UserLike[]
+  savedBy     UserSave[]
+  annotations Annotation[]
+  comments    Comment[]
+}
+
+// Content <-> Entity (many-to-many edge in the knowledge graph)
+model ContentEntityLink {
+  contentId String
+  entityId  String
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  entity    Entity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, entityId])
+}
+
+// Hand-curated Content <-> Content edges (the `related` field from content.js)
+model ContentRelated {
+  fromId String
+  toId   String
+  from   Content @relation("RelatedFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to     Content @relation("RelatedTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@id([fromId, toId])
+}
+
+model UserLike {
+  userId    String
+  contentId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, contentId])
+}
+
+model UserSave {
+  userId    String
+  contentId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, contentId])
+}
+
+// A note and/or a highlighted excerpt a user attaches to a content item.
+// Private to the user — not the same as a public Comment (that's Phase 4).
+model Annotation {
+  id            String   @id @default(cuid())
+  userId        String
+  contentId     String
+  note          String?
+  highlightText String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([userId, contentId])
+}
+
+// A public comment on a content item. Passes through moderation before
+// becoming visible — see lib/moderation.ts. `status` lets us hide flagged
+// comments without deleting them (useful for appeals/review later).
+model Comment {
+  id        String           @id @default(cuid())
+  userId    String
+  contentId String
+  text      String
+  status    ModerationStatus @default(visible)
+  reason    String? // why it was flagged, if it was
+  createdAt DateTime         @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId, status])
+}
+
+// A saved reading plan — generated from the knowledge graph via
+// lib/aiClient.ts generateStudyPlan(). Users can have multiple plans.
+model ReadingPlan {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  entityId  String
+  days      Int      @default(5)
+  progress  Int      @default(0) // how many days completed
+  plan      String   // JSON array of { day, contentId, ref }
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Topics the user selected during onboarding — drives personalized
+// feed ordering via the recommendation engine.
+model UserInterest {
+  id       String @id @default(cuid())
+  userId   String
+  entityId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, entityId])
+}
+
+// ======================= COMMUNITY (Phase 4) =======================
+
+enum FriendshipStatus {
+  pending
+  accepted
+}
+
+// Bi-directional friendship with accept/decline flow.
+model Friendship {
+  id        String           @id @default(cuid())
+  fromId    String
+  toId      String
+  status    FriendshipStatus @default(pending)
+  createdAt DateTime         @default(now())
+
+  from User @relation("FriendshipFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to   User @relation("FriendshipTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@unique([fromId, toId])
+  @@index([toId, status])
+}
+
+model Group {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdById String
+  createdAt   DateTime @default(now())
+
+  members        GroupMember[]
+  prayerRequests PrayerRequest[]
+}
+
+enum UserRole {
+  user
+  moderator
+  admin
+}
+
+enum GroupRole {
+  admin
+  member
+}
+
+model GroupMember {
+  id       String    @id @default(cuid())
+  userId   String
+  groupId  String
+  role     GroupRole  @default(member)
+  joinedAt DateTime  @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+}
+
+model PrayerRequest {
+  id        String           @id @default(cuid())
+  userId    String
+  groupId   String?
+  text      String
+  status    ModerationStatus @default(visible)
+  reason    String?
+  isPrivate Boolean          @default(false)
+  prayCount Int              @default(0)
+  createdAt DateTime         @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group? @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, status])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model LoginCode {
+  id        String   @id @default(cuid())
+  userId    String
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ContentReport {
+  id        String   @id @default(cuid())
+  userId    String
+  contentId String
+  reason    String
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([contentId])
+  @@index([userId])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  userId    String
+  caption   String?
+  mediaUrl  String?
+  mediaType String?  // "video" or "photo"
+  thumbnailUrl String?
+  createdAt DateTime @default(now())
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes    PostLike[]
+  comments PostComment[]
+
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model PostLike {
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@index([postId])
+}
+
+model SponsoredPost {
+  id              String    @id @default(cuid())
+  userId          String
+  postId          String?
+  title           String
+  body            String
+  mediaUrl        String?
+  linkUrl         String?
+  status          String    @default("draft") // draft, pending_payment, active, ended, refused
+  amountCents     Int
+  durationDays    Int
+  startsAt        DateTime?
+  endsAt          DateTime?
+  impressions     Int       @default(0)
+  clicks          Int       @default(0)
+  stripeSessionId String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status, endsAt])
+  @@index([userId])
+}
+
+model ModeratorApplication {
+  id              String   @id @default(cuid())
+  userId          String?
+  name            String
+  email           String
+  age             Int?
+  experience      String
+  whyJoin         String
+  references      String?
+  status          String   @default("pending") // pending, approved, rejected
+  reviewedById    String?
+  reviewNotes     String?
+  createdAt       DateTime @default(now())
+  reviewedAt      DateTime?
+
+  @@index([status, createdAt])
+}
+
+model Achievement {
+  id              String   @id @default(cuid())
+  name            String
+  description     String
+  icon            String   // emoji or icon name
+  category        String   // "streak" | "social" | "explorer" | "learner"
+  criteria        String   // JSON: { type: "streak", value: 30 } etc
+  xpReward        Int      @default(50)
+  unlockedUsers   UserAchievement[]
+  createdAt       DateTime @default(now())
+  @@unique([name])
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
+
+model UserXP {
+  userId    String   @id
+  totalXP   Int      @default(0)
+  level     Int      @default(1)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Challenge {
+  id              String   @id @default(cuid())
+  name            String
+  description     String
+  type            String   // "read" | "pray" | "share" | "comment"
+  goal            Int      // how many to complete
+  xpReward        Int      @default(100)
+  weekOf          DateTime // week starting date
+  active          Boolean  @default(true)
+  participants    UserChallenge[]
+  createdAt       DateTime @default(now())
+  @@index([weekOf])
+}
+
+model UserChallenge {
+  id          String   @id @default(cuid())
+  userId      String
+  challengeId String
+  progress    Int      @default(0)
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  @@unique([userId, challengeId])
+  @@index([userId])
+}
+
+model PostComment {
+  id        String           @id @default(cuid())
+  userId    String
+  postId    String
+  text      String
+  status    ModerationStatus @default(visible)
+  reason    String?
+  createdAt DateTime         @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId, status])
+}
