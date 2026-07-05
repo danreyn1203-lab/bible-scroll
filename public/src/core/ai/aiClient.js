@@ -7,10 +7,18 @@ export class PremiumRequiredError extends Error {
   constructor() { super("premium_required"); this.name = "PremiumRequiredError"; }
 }
 
+export class AIComingSoonError extends Error {
+  constructor() { super("ai_coming_soon"); this.name = "AIComingSoonError"; }
+}
+
 async function handleResponse(res) {
   if (res.status === 403) {
     const data = await res.json().catch(() => ({}));
     if (data.code === "premium_required") throw new PremiumRequiredError();
+  }
+  if (res.status === 503) {
+    const data = await res.json().catch(() => ({}));
+    if (data.code === "ai_coming_soon") throw new AIComingSoonError();
   }
   if (!res.ok) throw new Error(`AI request failed: ${res.status}`);
   return res.json();

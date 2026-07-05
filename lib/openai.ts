@@ -39,7 +39,7 @@ export async function callModel(opts: CallOpts): Promise<string | Record<string,
 export function handleAIError(err: unknown): NextResponse {
   const msg = err instanceof Error ? err.message : String(err);
   if (msg.startsWith("AI not configured")) {
-    return NextResponse.json({ error: "AI not configured" }, { status: 503 });
+    return NextResponse.json({ error: "AI features are coming soon", code: "ai_coming_soon" }, { status: 503 });
   }
-  return NextResponse.json({ error: "AI request failed", detail: msg }, { status: 500 });
+  return NextResponse.json({ error: "AI request failed", code: "ai_coming_soon" }, { status: 503 });
 }

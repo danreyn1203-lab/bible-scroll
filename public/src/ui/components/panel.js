@@ -1,5 +1,5 @@
 import { entitiesOf } from "../../data/graph.js";
-import { suggestCrossReferences, explainHistory, generateStudyPlan, generateQuiz, generateDevotional, PremiumRequiredError } from "../../core/ai/aiClient.js";
+import { suggestCrossReferences, explainHistory, generateStudyPlan, generateQuiz, generateDevotional, PremiumRequiredError, AIComingSoonError } from "../../core/ai/aiClient.js";
 import { continueLearning, flagStubInterest } from "../../core/discoveryEngine.js";
 import { recordSignal } from "../../core/engine.js";
 import { state } from "../../core/state.js";
@@ -140,8 +140,20 @@ export async function openExplorePanel(contentId, onJump) {
               <div style="font-weight:700;font-size:14px;color:var(--ink);margin-bottom:6px">Sign in to continue</div>
               <div style="font-size:12px;color:var(--muted);line-height:1.5">AI Chat, Devotionals, Quizzes and Study Plans are free — just sign in to use them.</div>
             </div>`;
+        } else if (err instanceof AIComingSoonError) {
+          aiOutput.innerHTML = `
+            <div style="text-align:center;padding:8px 0">
+              <div style="font-size:28px;margin-bottom:10px">✦</div>
+              <div style="font-weight:700;font-size:14px;color:var(--ink);margin-bottom:6px">Coming soon</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5">AI Chat, Devotionals, Quizzes and Study Plans are on the way — check back soon.</div>
+            </div>`;
         } else {
-          aiOutput.textContent = "AI unavailable — check your OpenAI API key and billing.";
+          aiOutput.innerHTML = `
+            <div style="text-align:center;padding:8px 0">
+              <div style="font-size:28px;margin-bottom:10px">✦</div>
+              <div style="font-weight:700;font-size:14px;color:var(--ink);margin-bottom:6px">Coming soon</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5">This feature isn't available yet — check back soon.</div>
+            </div>`;
         }
       }
     });
