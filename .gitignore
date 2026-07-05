@@ -42,3 +42,8 @@ next-env.d.ts
 
 /app/generated/prisma
 public/uploads/
+
+# Cloudflare / OpenNext build artifacts
+.open-next/
+.wrangler/
+.dev.vars
