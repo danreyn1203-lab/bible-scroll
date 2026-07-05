@@ -81,7 +81,7 @@ export async function GET() {
     where: { ...baseWhere, id: { notIn: [...excludeIds, ...seen] } },
     select, take: 12, orderBy: { createdAt: "desc" },
   });
-  take(fallback, "New to Taste Manna");
+  take(fallback, "New to Simply Manna");
 
   return NextResponse.json({ suggestions: collected });
 }

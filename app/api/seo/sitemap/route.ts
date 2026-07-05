@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 
 export async function GET() {
-  const baseUrl = process.env.NEXTAUTH_URL || "https://tastemanna.com";
+  const baseUrl = process.env.NEXTAUTH_URL || "https://simplymanna.com";
 
   // Fetch dynamic content
   const [content, users, groups] = await Promise.all([

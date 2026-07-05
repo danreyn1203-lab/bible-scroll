@@ -5,7 +5,7 @@ import { prisma } from "../../../../lib/prisma";
 // Stripe sends events here when subscriptions change.
 // Add this endpoint in your Stripe dashboard:
 //   https://dashboard.stripe.com/webhooks
-// URL: https://tastemanna.com/api/subscribe/webhook
+// URL: https://simplymanna.com/api/subscribe/webhook
 // Events: customer.subscription.created, customer.subscription.updated,
 //         customer.subscription.deleted, checkout.session.completed
 export async function POST(req: Request) {

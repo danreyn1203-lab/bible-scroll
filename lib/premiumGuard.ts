@@ -7,7 +7,7 @@ export type PremiumGuardResult =
 
 // Gate any route to signed-in users.
 //
-// LAUNCH NOTE: Taste Manna is free during beta — there is no paywall.
+// LAUNCH NOTE: Simply Manna is free during beta — there is no paywall.
 // This guard now only checks that the user is signed in. The premium /
 // subscription logic is intentionally left dormant (not deleted) so it can
 // be switched back on later by restoring the isPremium/role check.

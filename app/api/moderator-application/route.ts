@@ -49,13 +49,13 @@ export async function POST(req: Request) {
     const adminUrl = `${process.env.APP_URL || "http://localhost:8943"}/admin.html#applications`;
     const html = `
       <h2>New moderator application</h2>
-      <p><b>${escapeHtml(name)}</b> (${escapeHtml(email)}) wants to help moderate Taste Manna.</p>
+      <p><b>${escapeHtml(name)}</b> (${escapeHtml(email)}) wants to help moderate Simply Manna.</p>
       <p><b>Experience:</b><br/>${escapeHtml(experience).slice(0, 500)}…</p>
       <p><b>Why they want to join:</b><br/>${escapeHtml(whyJoin).slice(0, 500)}…</p>
       <p><a href="${adminUrl}">Review in admin dashboard</a></p>
     `;
     await Promise.all(
-      admins.map(a => sendEmail({ to: a.email, subject: "New moderator application — Taste Manna", html }).catch(() => null))
+      admins.map(a => sendEmail({ to: a.email, subject: "New moderator application — Simply Manna", html }).catch(() => null))
     );
   }
 

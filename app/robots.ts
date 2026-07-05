@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/admin/", "/admin.html", "/private/"],
       },
     ],
-    sitemap: "https://tastemanna.com/sitemap.xml",
+    sitemap: "https://simplymanna.com/sitemap.xml",
   };
 }

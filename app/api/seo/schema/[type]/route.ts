@@ -29,7 +29,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ type: s
       url: `${baseUrl}/verse/${content.id}`,
       ogImage: `${baseUrl}/api/og?type=verse&id=${content.id}`,
       keywords: content.entityLinks.map(l => l.entity.label),
-      author: { name: "Taste Manna", url: baseUrl },
+      author: { name: "Simply Manna", url: baseUrl },
       publishedAt: new Date(),
       ogType: "article",
     });
@@ -48,7 +48,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ type: s
       url: `${baseUrl}/entity/${entity.id}`,
       ogImage: `${baseUrl}/api/og?type=entity&id=${entity.id}`,
       keywords: [entity.label, entity.type],
-      author: { name: "Taste Manna", url: baseUrl },
+      author: { name: "Simply Manna", url: baseUrl },
       publishedAt: new Date(),
       ogType: "article",
     });

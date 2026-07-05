@@ -13,13 +13,13 @@ export type MetadataInput = {
   updatedAt?: Date;
 };
 
-export function generateMetaTags(input: MetadataInput, baseUrl: string = "https://tastemanna.com") {
+export function generateMetaTags(input: MetadataInput, baseUrl: string = "https://simplymanna.com") {
   const canonical = input.canonical ? new URL(input.canonical, baseUrl).toString() : baseUrl;
   const ogImage = input.ogImage || `${baseUrl}/og-taste-manna.png`;
   const keywords = (input.keywords || []).join(", ");
 
   return {
-    title: `${input.title} | Taste Manna — Bible Discovery`,
+    title: `${input.title} | Simply Manna — Bible Discovery`,
     description: input.description,
     canonical,
     keywords,
@@ -29,11 +29,11 @@ export function generateMetaTags(input: MetadataInput, baseUrl: string = "https:
       type: input.ogType || "website",
       url: canonical,
       image: ogImage,
-      siteName: "Taste Manna",
+      siteName: "Simply Manna",
     },
     twitter: {
       card: "summary_large_image",
-      site: "@TasteManna",
+      site: "@SimplyManna",
       title: input.title,
       description: input.description,
       image: ogImage,
@@ -61,7 +61,7 @@ export function generateArticleSchema(input: Omit<MetadataInput, "author"> & { u
     },
     publisher: {
       "@type": "Organization",
-      name: "Manna",
+      name: "Simply Manna",
       logo: {
         "@type": "ImageObject",
         url: "/logo.png",
@@ -76,27 +76,27 @@ export function generateArticleSchema(input: Omit<MetadataInput, "author"> & { u
   };
 }
 
-export function generateOrganizationSchema(baseUrl: string = "https://tastemanna.com") {
+export function generateOrganizationSchema(baseUrl: string = "https://simplymanna.com") {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Taste Manna",
+    name: "Simply Manna",
     url: baseUrl,
     logo: `${baseUrl}/logo.png`,
     description: "AI-powered Bible discovery platform with personalized verse recommendations, community features, and deep learning.",
     sameAs: [
-      "https://twitter.com/TasteManna",
-      "https://instagram.com/TasteManna",
+      "https://twitter.com/SimplyManna",
+      "https://instagram.com/SimplyManna",
     ],
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "Support",
-      email: "support@tastemanna.com",
+      email: "support@simplymanna.com",
     },
   };
 }
 
-export function generateBreadcrumbSchema(items: { name: string; url: string }[], baseUrl: string = "https://tastemanna.com") {
+export function generateBreadcrumbSchema(items: { name: string; url: string }[], baseUrl: string = "https://simplymanna.com") {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",

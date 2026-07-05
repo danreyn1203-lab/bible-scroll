@@ -1,4 +1,4 @@
-// Server-side knowledge-graph traversal — the same shape as Manna's
+// Server-side knowledge-graph traversal — the same shape as Simply Manna's
 // src/data/graph.js, but querying Postgres instead of an in-memory array.
 // This is what aiClient.ts and future recommendation logic build on.
 
@@ -51,7 +51,7 @@ export async function relatedContent(contentId: string) {
 /**
  * Given an entity the user is gravitating toward, find content linked to a
  * *different but graph-adjacent* entity — the same "bridge" idea from
- * Manna's engine.js, so recommendations introduce new topics instead of
+ * Simply Manna's engine.js, so recommendations introduce new topics instead of
  * looping on one.
  */
 export async function bridgeFromEntity(entityId: string, excludeContentIds: Set<string> = new Set()) {

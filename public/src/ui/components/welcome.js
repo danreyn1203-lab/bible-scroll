@@ -59,7 +59,7 @@ function render(el, mode, dismissible, ctx) {
     `;
   } else {
     inner = `
-      <h1>${isSignup ? "Welcome to Manna" : "Welcome back"}</h1>
+      <h1>${isSignup ? "Welcome to Simply Manna" : "Welcome back"}</h1>
       <p class="welcome-sub">${isSignup
         ? "Create an account so your likes, saves, and streak follow you everywhere."
         : "Log in to pick up your reading where you left off."}</p>

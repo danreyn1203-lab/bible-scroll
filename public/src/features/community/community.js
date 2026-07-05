@@ -351,7 +351,7 @@ function wireFeedActions(feedEl, me) {
     if (act === "share-post" && postId) {
       const url = `${window.location.origin}/#post-${postId}`;
       if (navigator.share) {
-        navigator.share({ url, title: "Taste Manna" }).then(() => awardXP(10, "share")).catch(() => {});
+        navigator.share({ url, title: "Simply Manna" }).then(() => awardXP(10, "share")).catch(() => {});
       } else {
         navigator.clipboard?.writeText(url).then(() => {
           toast("Link copied");

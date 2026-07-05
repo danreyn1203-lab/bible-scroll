@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
   await prisma.loginCode.create({ data: { userId: user.id, codeHash, expiresAt } });
-  await sendEmail({ to: user.email, subject: "Your Taste Manna sign-in code", html: loginCodeTemplate(code) });
+  await sendEmail({ to: user.email, subject: "Your Simply Manna sign-in code", html: loginCodeTemplate(code) });
 
   return NextResponse.json({ twoFactor: true });
 }

@@ -1,4 +1,4 @@
-// Talks to the real bible-scroll backend now that Manna is served from the
+// Talks to the real bible-scroll backend now that Simply Manna is served from the
 // same origin (no CORS/cross-cookie complications). This is plain fetch
 // rather than the next-auth/react package, since this file is a static
 // ES module, not bundled by Next.js.

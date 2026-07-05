@@ -34,7 +34,7 @@ export async function POST() {
           currency: "usd",
           recurring: { interval: "month" },
           product_data: {
-            name: "Taste Manna Premium",
+            name: "Simply Manna Premium",
             description: "Unlimited AI chat, devotionals, study plans & ad-free reading",
             images: [`${baseUrl}/logo.png`],
           },

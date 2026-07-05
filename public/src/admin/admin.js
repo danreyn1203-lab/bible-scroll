@@ -1,4 +1,4 @@
-// Admin dashboard for Taste Manna — staff-only.
+// Admin dashboard for Simply Manna — staff-only.
 // Tabs: Overview (stats), Moderation (comments + reports), Users, Health.
 
 const root = document.getElementById("admin-root");
@@ -39,7 +39,7 @@ function renderSigninPrompt() {
     <div class="signin-prompt">
       <h2>Admin access required</h2>
       <p>You must be signed in as a moderator or admin to view this page.</p>
-      <p><a href="/index.html">← Back to Taste Manna</a></p>
+      <p><a href="/index.html">← Back to Simply Manna</a></p>
     </div>
   `;
 }
@@ -49,7 +49,7 @@ function renderForbidden(msg) {
     <div class="signin-prompt">
       <h2>Access denied</h2>
       <p>${escapeHtml(msg)}</p>
-      <p><a href="/index.html">← Back to Taste Manna</a></p>
+      <p><a href="/index.html">← Back to Simply Manna</a></p>
     </div>
   `;
 }
@@ -57,7 +57,7 @@ function renderForbidden(msg) {
 function renderShell() {
   root.innerHTML = `
     <div class="admin-header">
-      <h1>Taste Manna · Admin</h1>
+      <h1>Simply Manna · Admin</h1>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span id="admin-refresh-badge" style="font-size:11px;color:rgba(255,255,255,.4);"></span>
         <button class="btn" id="admin-refresh-btn" title="Refresh now">↻ Refresh</button>

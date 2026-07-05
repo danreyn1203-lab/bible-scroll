@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const title = url.searchParams.get("title") || "Taste Manna";
+  const title = url.searchParams.get("title") || "Simply Manna";
   const description = url.searchParams.get("desc") || "Discover Scripture Daily";
   const type = url.searchParams.get("type") || "website";
 

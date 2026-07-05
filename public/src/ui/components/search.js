@@ -18,7 +18,7 @@ export function openSearch() {
         <button class="search-close" aria-label="Close">×</button>
       </div>
       <div class="search-results" id="search-results">
-        <div class="search-hint">Type to search across Taste Manna.</div>
+        <div class="search-hint">Type to search across Simply Manna.</div>
       </div>
     </div>
   `;

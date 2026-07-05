@@ -27,6 +27,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Email not configured. Set RESEND_API_KEY in .env" }, { status: 503 });
   }
 
-  await sendEmail({ to: user.email, subject: "Reset your Taste Manna password", html: resetPasswordTemplate(link) });
+  await sendEmail({ to: user.email, subject: "Reset your Simply Manna password", html: resetPasswordTemplate(link) });
   return NextResponse.json({ ok: true });
 }

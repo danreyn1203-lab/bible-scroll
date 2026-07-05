@@ -2,7 +2,7 @@
 
 import { generateOrganizationSchema, generateBreadcrumbSchema } from "./seo";
 
-export function injectOrganizationSchema(baseUrl: string = "https://tastemanna.com"): string {
+export function injectOrganizationSchema(baseUrl: string = "https://simplymanna.com"): string {
   return `<script type="application/ld+json">${JSON.stringify(generateOrganizationSchema(baseUrl), null, 2)}</script>`;
 }
 
@@ -10,8 +10,8 @@ export function injectBreadcrumbs(items: { name: string; url: string }[], baseUr
   return `<script type="application/ld+json">${JSON.stringify(generateBreadcrumbSchema(items, baseUrl), null, 2)}</script>`;
 }
 
-// For Taste Manna's static HTML head injection
-export function generateHeadTags(baseUrl: string = "https://tastemanna.com"): string {
+// For Simply Manna's static HTML head injection
+export function generateHeadTags(baseUrl: string = "https://simplymanna.com"): string {
   return `
     <!-- SEO Meta Tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

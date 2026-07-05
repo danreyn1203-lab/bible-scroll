@@ -1,5 +1,5 @@
 // Server-authoritative streak logic — the same "engagement, not just opening
-// the app" philosophy as Manna's retention.js, but computed from real
+// the app" philosophy as Simply Manna's retention.js, but computed from real
 // per-user data (UserLike/UserSave timestamps) instead of localStorage.
 
 import { prisma } from "./prisma";

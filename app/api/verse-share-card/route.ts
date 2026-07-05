@@ -35,7 +35,7 @@ export async function GET(req: Request) {
 
     <!-- Logo/watermark -->
     <text x="600" y="570" font-size="18" font-family="Arial, sans-serif" text-anchor="middle" fill="#ccc">
-      Taste Manna — Bible Discovery
+      Simply Manna — Bible Discovery
     </text>
   </svg>`;
 

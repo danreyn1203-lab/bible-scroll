@@ -1,4 +1,4 @@
-// Ports the Manna prototype's hand-authored knowledge graph (entities.js +
+// Ports the Simply Manna prototype's hand-authored knowledge graph (entities.js +
 // content.js) into the real database. Run with: npx tsx prisma/seed.ts
 
 import "dotenv/config";

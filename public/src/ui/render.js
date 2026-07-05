@@ -127,8 +127,8 @@ function shareItem(id) {
   const d = contentIndex.get(id);
   if (!d) return;
   const plain = (d.text + (d.answer ? " — " + d.answer : "")).replace(/<[^>]+>/g, "");
-  const txt = `“${plain}”\n— ${d.ref}\n\nvia Manna ✦`;
-  if (navigator.share) navigator.share({ title: "Manna", text: txt }).catch(() => {});
+  const txt = `“${plain}”\n— ${d.ref}\n\nvia Simply Manna ✦`;
+  if (navigator.share) navigator.share({ title: "Simply Manna", text: txt }).catch(() => {});
   else navigator.clipboard?.writeText(txt).then(() => toast("Copied to clipboard ✦"), () => toast("Copy not available"));
 }
 
