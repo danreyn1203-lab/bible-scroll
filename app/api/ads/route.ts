@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "../../../auth";
 import { prisma } from "../../../lib/prisma";
 import { checkText } from "../../../lib/moderation";
-import { AD_PRICING, getStripe, isStripeConfigured } from "../../../lib/stripe";
+import { AD_PRICING } from "../../../lib/adPricing";
 
 // List currently active sponsored posts (public read).
 export async function GET() {
@@ -15,7 +15,8 @@ export async function GET() {
   return NextResponse.json({ ads });
 }
 
-// Create a sponsored post draft + (optionally) a Stripe checkout session.
+// LAUNCH NOTE: Ad checkout is dormant during beta — no payment system is
+// wired up. Drafts are still created so the flow can be re-enabled later.
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Not logged in" }, { status: 401 });
@@ -51,38 +52,9 @@ export async function POST(req: Request) {
     },
   });
 
-  // If Stripe is configured, kick off a checkout session.
-  // Otherwise return the draft with a hint to the operator.
-  if (!isStripeConfigured()) {
-    return NextResponse.json({
-      ad,
-      checkoutUrl: null,
-      hint: "Stripe not configured. Set STRIPE_SECRET_KEY to enable payments.",
-    });
-  }
-
-  const stripe = getStripe()!;
-  const appUrl = process.env.APP_URL || "http://localhost:8943";
-  const checkout = await stripe.checkout.sessions.create({
-    mode: "payment",
-    payment_method_types: ["card"],
-    line_items: [{
-      price_data: {
-        currency: "usd",
-        product_data: { name: `Sponsored post — ${pricing.label}` },
-        unit_amount: pricing.amountCents,
-      },
-      quantity: 1,
-    }],
-    success_url: `${appUrl}/?ad_paid=${ad.id}`,
-    cancel_url: `${appUrl}/?ad_canceled=${ad.id}`,
-    metadata: { adId: ad.id, userId: session.user.id },
+  return NextResponse.json({
+    ad,
+    checkoutUrl: null,
+    hint: "Sponsored ads aren't open for payment yet — coming soon.",
   });
-
-  await prisma.sponsoredPost.update({
-    where: { id: ad.id },
-    data: { status: "pending_payment", stripeSessionId: checkout.id },
-  });
-
-  return NextResponse.json({ ad, checkoutUrl: checkout.url });
 }
