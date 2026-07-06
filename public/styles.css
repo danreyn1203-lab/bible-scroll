@@ -245,13 +245,14 @@ body.page-scroll,html:has(body.page-scroll){height:auto;min-height:100%;overflow
 
 /* ============================ FEED ============================ */
 .feed{position:relative;z-index:2;height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;
-  -webkit-overflow-scrolling:touch;scroll-behavior:smooth;perspective:1000px}
+  -webkit-overflow-scrolling:touch;scroll-behavior:smooth;perspective:1000px;
+  padding-top:calc(env(safe-area-inset-top) + 118px)}
 .feed::-webkit-scrollbar{display:none}
 .feed{scrollbar-width:none}
 
-.card{position:relative;width:100%;scroll-snap-align:start;scroll-snap-stop:always;
+.card{position:relative;width:100%;max-width:680px;margin:0 auto 16px;scroll-snap-align:start;scroll-snap-stop:always;
   display:flex;flex-direction:column;justify-content:center;
-  padding:28px 0;margin-bottom:16px;overflow:visible;--ratio:1;--mx:50%;--my:35%;
+  padding:28px 0;overflow:visible;--ratio:1;--mx:50%;--my:35%;
   border-radius:28px}
 .card::before,.card::after{border-radius:28px}
 .card::before{content:"";position:absolute;inset:0;z-index:0;background:var(--grad);
