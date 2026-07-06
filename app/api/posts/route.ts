@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
-import { mkdir, writeFile } from "fs/promises";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { randomUUID } from "crypto";
-import path from "path";
 import { auth } from "../../../auth";
 import { prisma } from "../../../lib/prisma";
 import { checkText } from "../../../lib/moderation";
 
 const MAX_BYTES = 50 * 1024 * 1024; // 50 MB
-const UPLOAD_DIR = path.join(process.cwd(), "public/uploads/posts");
-
-export const runtime = "nodejs";
 
 export async function GET() {
   const session = await auth();
@@ -69,6 +65,8 @@ export async function POST(req: Request) {
     if (!mod.allowed) return NextResponse.json({ error: "Caption didn't pass moderation", reason: mod.reason }, { status: 422 });
   }
 
+  const { env } = await getCloudflareContext({ async: true });
+
   let mediaUrl: string | null = null;
   let mediaType: string | null = null;
 
@@ -83,11 +81,10 @@ export async function POST(req: Request) {
     }
     mediaType = isVideo ? "video" : "photo";
     const ext = (file.name.split(".").pop() || (isVideo ? "mp4" : "jpg")).toLowerCase().replace(/[^a-z0-9]/g, "");
-    const filename = `${randomUUID()}.${ext.slice(0, 5) || (isVideo ? "mp4" : "jpg")}`;
-    await mkdir(UPLOAD_DIR, { recursive: true });
-    const buf = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(UPLOAD_DIR, filename), buf);
-    mediaUrl = `/uploads/posts/${filename}`;
+    const key = `posts/${randomUUID()}.${ext.slice(0, 5) || (isVideo ? "mp4" : "jpg")}`;
+    const buf = await file.arrayBuffer();
+    await env.MEDIA_BUCKET.put(key, buf, { httpMetadata: { contentType: file.type } });
+    mediaUrl = `/api/media/${key}`;
   }
 
   // Save video thumbnail if the client extracted one (data:image/jpeg;base64,...)
@@ -98,10 +95,9 @@ export async function POST(req: Request) {
       const thumbExt = match[1] === "jpeg" ? "jpg" : match[1].slice(0, 4);
       const thumbBuf = Buffer.from(match[2], "base64");
       if (thumbBuf.length < 2 * 1024 * 1024) {
-        const thumbName = `${randomUUID()}-thumb.${thumbExt}`;
-        await mkdir(UPLOAD_DIR, { recursive: true });
-        await writeFile(path.join(UPLOAD_DIR, thumbName), thumbBuf);
-        thumbnailUrl = `/uploads/posts/${thumbName}`;
+        const thumbKey = `posts/${randomUUID()}-thumb.${thumbExt}`;
+        await env.MEDIA_BUCKET.put(thumbKey, thumbBuf, { httpMetadata: { contentType: `image/${match[1]}` } });
+        thumbnailUrl = `/api/media/${thumbKey}`;
       }
     }
   }

@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
-import { unlink } from "fs/promises";
-import path from "path";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { auth } from "../../../../auth";
 import { prisma } from "../../../../lib/prisma";
+
+function r2KeyFromMediaUrl(url: string | null): string | null {
+  if (!url?.startsWith("/api/media/")) return null;
+  return url.slice("/api/media/".length);
+}
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -14,10 +18,12 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  if (post.mediaUrl?.startsWith("/uploads/posts/")) {
-    const file = path.join(process.cwd(), "public", post.mediaUrl);
-    await unlink(file).catch(() => {});
-  }
+  const { env } = await getCloudflareContext({ async: true });
+  const mediaKey = r2KeyFromMediaUrl(post.mediaUrl);
+  const thumbKey = r2KeyFromMediaUrl(post.thumbnailUrl);
+  if (mediaKey) await env.MEDIA_BUCKET.delete(mediaKey).catch(() => {});
+  if (thumbKey) await env.MEDIA_BUCKET.delete(thumbKey).catch(() => {});
+
   await prisma.post.delete({ where: { id } });
   return NextResponse.json({ deleted: true });
 }

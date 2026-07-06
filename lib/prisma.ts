@@ -21,8 +21,31 @@ function createClient() {
   return new PrismaClient({ adapter });
 }
 
-export const prisma = globalForPrisma.prisma ?? createClient();
+// Cloudflare Workers can reuse the same running instance across many
+// unrelated requests. Caching one Prisma/Neon connection at module scope
+// (fine in local Node dev) means one user's request can end up reusing a
+// database connection/promise created for a different user's request —
+// Cloudflare surfaces this as "promise resolved from a different request
+// context" and it can cause requests to hang. Detect Workers via the
+// documented navigator.userAgent check and, only there, hand back a proxy
+// that builds a brand-new client (and Neon connection) per property access
+// instead of one shared instance.
+const isCloudflareWorkers =
+  typeof navigator !== "undefined" && navigator.userAgent === "Cloudflare-Workers";
 
-if (process.env.NODE_ENV !== "production") {
+function freshClientProxy(): PrismaClient {
+  return new Proxy({} as PrismaClient, {
+    get(_target, prop, _receiver) {
+      const client = createClient();
+      return Reflect.get(client as object, prop, client);
+    },
+  });
+}
+
+export const prisma: PrismaClient = isCloudflareWorkers
+  ? freshClientProxy()
+  : globalForPrisma.prisma ?? createClient();
+
+if (!isCloudflareWorkers && process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
