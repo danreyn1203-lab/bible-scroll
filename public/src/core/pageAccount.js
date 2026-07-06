@@ -1,10 +1,15 @@
 // Shared account-button wiring for standalone pages (leaderboard, donate, ads, home).
 // Mirrors what app.js does for index.html's top bar, using the real session/auth modules.
 import { getSession } from "./authClient.js";
-import { openAuthPanel } from "../ui/components/welcome.js";
+import { openAuthPanel, maybeAutoOpen } from "../ui/components/welcome.js";
 import { showAccountMenu } from "../ui/components/accountMenu.js";
 
 export async function initPageAccount(buttonEl) {
+  // Force sign-in on every page that wires up the account button, not just
+  // the main feed — otherwise visiting e.g. /leaderboard.html directly
+  // skips the auth wall entirely.
+  await maybeAutoOpen();
+
   if (!buttonEl) return null;
 
   let session = await getSession();
