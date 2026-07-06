@@ -167,8 +167,19 @@ export async function showAccountMenu(anchorEl, onChange) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { toast("Image too large (max 5MB)"); return; }
-    avatarDataUrl = await shrinkImage(file);
-    preview.innerHTML = `<img src="${avatarDataUrl}" alt="" />`;
+    try {
+      avatarDataUrl = await shrinkImage(file);
+      preview.innerHTML = `<img src="${avatarDataUrl}" alt="" />`;
+      // Save immediately on selection — waiting for a separate "Save changes"
+      // click meant the photo looked picked but never actually persisted if
+      // the user closed the menu right after choosing it.
+      const updated = await saveProfile({ avatarUrl: avatarDataUrl });
+      if (updated) { toast("Photo updated ✦"); onChange?.(); }
+      else toast("Couldn't save photo — try again");
+    } catch (err) {
+      console.error("Avatar processing failed:", err);
+      toast("Couldn't process that photo — try a different one");
+    }
   });
 
   const bioInput = menu.querySelector("#acct-bio");
