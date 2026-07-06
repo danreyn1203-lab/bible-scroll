@@ -5,6 +5,11 @@ import { createHash } from "crypto";
 import { prisma } from "./lib/prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // Explicit rather than relying solely on the AUTH_TRUST_HOST env var —
+  // on Cloudflare Workers the env var isn't reliably visible at the point
+  // this config object is evaluated, which was causing an UntrustedHost
+  // error on every request.
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   providers: [
