@@ -18,15 +18,29 @@ export async function POST(req: Request) {
     where: { userId_contentId: { userId: session.user.id, contentId } },
   });
 
-  if (existing) {
-    await prisma.userLike.delete({
+  let liked: boolean;
+  try {
+    if (existing) {
+      await prisma.userLike.delete({
+        where: { userId_contentId: { userId: session.user.id, contentId } },
+      });
+      liked = false;
+    } else {
+      await prisma.userLike.create({
+        data: { userId: session.user.id, contentId },
+      });
+      liked = true;
+    }
+  } catch {
+    // Two rapid toggles raced (e.g. a quick double-click) — the delete/create
+    // above may have hit a record another in-flight request already changed.
+    // Re-check actual state instead of crashing with a 500.
+    const stillExists = await prisma.userLike.findUnique({
       where: { userId_contentId: { userId: session.user.id, contentId } },
     });
-  } else {
-    await prisma.userLike.create({
-      data: { userId: session.user.id, contentId },
-    });
+    liked = !!stillExists;
   }
+
   const count = await prisma.userLike.count({ where: { contentId } });
-  return NextResponse.json({ liked: !existing, count });
+  return NextResponse.json({ liked, count });
 }

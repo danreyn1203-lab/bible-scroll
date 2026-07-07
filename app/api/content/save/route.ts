@@ -18,15 +18,29 @@ export async function POST(req: Request) {
     where: { userId_contentId: { userId: session.user.id, contentId } },
   });
 
-  if (existing) {
-    await prisma.userSave.delete({
+  let saved: boolean;
+  try {
+    if (existing) {
+      await prisma.userSave.delete({
+        where: { userId_contentId: { userId: session.user.id, contentId } },
+      });
+      saved = false;
+    } else {
+      await prisma.userSave.create({
+        data: { userId: session.user.id, contentId },
+      });
+      saved = true;
+    }
+  } catch {
+    // Two rapid toggles raced (e.g. a quick double-click) — the delete/create
+    // above may have hit a record another in-flight request already changed.
+    // Re-check actual state instead of crashing with a 500.
+    const stillExists = await prisma.userSave.findUnique({
       where: { userId_contentId: { userId: session.user.id, contentId } },
     });
-  } else {
-    await prisma.userSave.create({
-      data: { userId: session.user.id, contentId },
-    });
+    saved = !!stillExists;
   }
+
   const count = await prisma.userSave.count({ where: { contentId } });
-  return NextResponse.json({ saved: !existing, count });
+  return NextResponse.json({ saved, count });
 }

@@ -101,26 +101,36 @@ function engage() {
 }
 
 async function toggleLike(card, id) {
-  const res = await apiToggleLike(id);
-  if (!res) return;
-
   const act = card.querySelector('[data-act="like"]');
-  act.classList.toggle("on", res.liked);
-  act.querySelector(".ic").innerHTML = res.liked ? ICONS.heartFilled : ICONS.heartOutline;
-  act.querySelector("[data-likect]").textContent = res.count ?? 0;
-  if (res.liked) { recordSignal(id, "like"); analytics("like", { id }); engage(); }
+  if (act.dataset.pending) return; // ignore rapid double-clicks while a request is in flight
+  act.dataset.pending = "1";
+  try {
+    const res = await apiToggleLike(id);
+    if (!res) return;
+    act.classList.toggle("on", res.liked);
+    act.querySelector(".ic").innerHTML = res.liked ? ICONS.heartFilled : ICONS.heartOutline;
+    act.querySelector("[data-likect]").textContent = res.count ?? 0;
+    if (res.liked) { recordSignal(id, "like"); analytics("like", { id }); engage(); }
+  } finally {
+    delete act.dataset.pending;
+  }
 }
 
 async function toggleSave(card, id) {
-  const res = await apiToggleSave(id);
-  if (!res) return;
-
   const act = card.querySelector('[data-act="save"]');
-  act.classList.toggle("saved", res.saved);
-  act.querySelector(".ic").innerHTML = res.saved ? ICONS.bookmarkFilled : ICONS.bookmarkOutline;
-  act.querySelector("[data-savect]").textContent = res.count ?? 0;
-  if (res.saved) { toast("Saved ✦"); recordSignal(id, "save"); analytics("save", { id }); engage(); }
-  else toast("Removed from Saved");
+  if (act.dataset.pending) return; // ignore rapid double-clicks while a request is in flight
+  act.dataset.pending = "1";
+  try {
+    const res = await apiToggleSave(id);
+    if (!res) return;
+    act.classList.toggle("saved", res.saved);
+    act.querySelector(".ic").innerHTML = res.saved ? ICONS.bookmarkFilled : ICONS.bookmarkOutline;
+    act.querySelector("[data-savect]").textContent = res.count ?? 0;
+    if (res.saved) { toast("Saved ✦"); recordSignal(id, "save"); analytics("save", { id }); engage(); }
+    else toast("Removed from Saved");
+  } finally {
+    delete act.dataset.pending;
+  }
 }
 
 function shareItem(id) {
