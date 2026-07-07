@@ -522,7 +522,7 @@ body.page-scroll,html:has(body.page-scroll){height:auto;min-height:100%;overflow
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
 
 /* ============ COMMUNITY · social-media feed ============ */
-.cm-shell{max-width:680px;margin:0 auto;padding:16px 14px 80px;display:flex;flex-direction:column;gap:18px}
+.cm-shell{max-width:680px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 76px) 14px 80px;display:flex;flex-direction:column;gap:18px}
 .cm-loading,.cm-empty{padding:60px 20px;text-align:center;color:var(--muted)}
 .cm-empty h3{color:var(--ink);margin:0 0 8px;font-size:18px}
 .cm-empty p{margin:0;line-height:1.5}
@@ -886,7 +886,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{
   .act{padding:10px 12px;font-size:13px}
 
   /* Community: remove side padding so posts fill width */
-  .cm-shell{padding:12px 10px 80px}
+  .cm-shell{padding:calc(env(safe-area-inset-top) + 76px) 10px 80px}
   .cm-post{border-radius:12px}
 
   /* Profile: single-column stats */

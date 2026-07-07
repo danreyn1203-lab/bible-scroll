@@ -289,7 +289,7 @@ export async function initRender() {
 
   let lastTap = 0;
   feedEl.addEventListener("click", e => {
-    if (e.target.closest("[data-act]") || e.target.closest("[data-reveal]")) return;
+    if (e.target.closest("[data-act]") || e.target.closest("[data-reveal]") || e.target.closest("[data-react]")) return;
     const now = Date.now();
     if (now - lastTap < 320) {
       const card = e.target.closest(".card");
