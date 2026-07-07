@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "../../../auth";
 import { prisma } from "../../../lib/prisma";
+import { getStreak } from "../../../lib/streak";
 
 // Personalized home dashboard: welcome message, streak, level, challenges, recent achievements.
 export async function GET() {
@@ -26,19 +27,10 @@ export async function GET() {
       where: { userId: session.user.id },
       include: { challenge: { select: { name: true, goal: true, description: true } } },
     }),
-    // Get streak (simplified: consecutive days since last engagement via PostLike)
-    prisma.postLike.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-      take: 1,
-      select: { createdAt: true },
-    }),
+    getStreak(session.user.id),
   ]);
 
-  // Calculate streak (simplified)
-  const lastEngagement = streak[0]?.createdAt || new Date(0);
-  const daysSinceEngagement = Math.floor((Date.now() - lastEngagement.getTime()) / (24 * 60 * 60 * 1000));
-  const streakDays = daysSinceEngagement > 1 ? 0 : 1; // TODO: implement full streak logic
+  const streakDays = streak.current;
 
   const greeting = user?.displayName ? `Welcome back, ${user.displayName}!` : "Welcome back!";
   const streakMessage = streakDays > 0 ? `You're on a ${streakDays}-day streak 🔥` : "Start your streak today!";
