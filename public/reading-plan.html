@@ -7,33 +7,56 @@
   <link rel="icon" href="/assets/logo-64.png" type="image/png" />
   <link rel="stylesheet" href="/styles.css">
   <style>
-    .rp-header { margin-bottom: 28px; }
-    .rp-day-badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--gold); background: rgba(201,161,74,.12); padding: 4px 12px; border-radius: 999px; margin-bottom: 12px; }
-    .rp-title { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
-    .rp-subtitle { font-size: 14px; color: var(--muted); }
+    .rp-wrap { max-width: 680px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 92px) 20px 100px; }
 
-    .rp-progress { height: 4px; background: rgba(255,255,255,.08); border-radius: 99px; margin-bottom: 32px; overflow: hidden; }
+    /* ── Hero header ── */
+    .rp-hero { background: linear-gradient(160deg, rgba(201,161,74,.14), rgba(91,83,184,.08)); border: 1px solid rgba(201,161,74,.25); border-radius: 24px; padding: 26px 24px; margin-bottom: 20px; position: relative; overflow: hidden; }
+    .rp-hero::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0px, rgba(255,255,255,.04) 1px, transparent 1px, transparent 22px); }
+    .rp-hero-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; margin-bottom: 18px; }
+    .rp-day-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--gold); background: rgba(201,161,74,.16); border: 1px solid rgba(201,161,74,.3); padding: 6px 13px; border-radius: 999px; }
+    .rp-streak { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: var(--ink); }
+    .rp-streak-flame { font-size: 15px; }
+
+    .rp-book-row { position: relative; display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .rp-book-icon { width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, var(--gold), #c4862a); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; box-shadow: 0 8px 20px rgba(201,161,74,.25); }
+    .rp-title { font-size: 24px; font-weight: 800; color: var(--ink); letter-spacing: -.3px; margin-bottom: 2px; }
+    .rp-subtitle { font-size: 13px; color: var(--muted); }
+
+    .rp-progress-row { position: relative; display: flex; align-items: center; gap: 12px; }
+    .rp-progress { flex: 1; height: 6px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; }
     .rp-progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), #e8c97a); border-radius: 99px; transition: width .6s ease; }
+    .rp-progress-pct { font-size: 12px; font-weight: 700; color: var(--gold); min-width: 34px; text-align: right; }
 
-    .rp-translation { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
-    .rp-trans-btn { border: 1px solid var(--glass-border); background: rgba(255,255,255,.04); color: var(--muted); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 999px; cursor: pointer; transition: all .2s; }
+    /* ── Translation picker ── */
+    .rp-translation { display: flex; gap: 7px; margin-bottom: 18px; flex-wrap: wrap; }
+    .rp-trans-btn { border: 1px solid var(--glass-border); background: rgba(255,255,255,.04); color: var(--muted); font-size: 12px; font-weight: 700; padding: 7px 15px; border-radius: 999px; cursor: pointer; transition: all .2s; }
     .rp-trans-btn.active, .rp-trans-btn:hover { background: var(--gold); border-color: var(--gold); color: #2a1d05; }
 
-    .rp-scripture { background: linear-gradient(135deg, rgba(201,161,74,.06), rgba(118,75,162,.06)); border: 1px solid rgba(201,161,74,.2); border-radius: 16px; padding: 24px; margin-bottom: 20px; max-height: 60vh; overflow-y: auto; }
-    .rp-ref { font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 16px; text-transform: uppercase; letter-spacing: .06em; }
-    .rp-verse { display: flex; gap: 12px; margin-bottom: 12px; line-height: 1.7; }
-    .rp-verse-num { flex-shrink: 0; font-size: 10px; font-weight: 700; color: var(--gold); padding-top: 4px; min-width: 18px; }
-    .rp-verse-text { font-size: 15px; color: var(--ink); font-family: var(--serif, Georgia, serif); }
+    /* ── Scripture card ── */
+    .rp-scripture { background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); border: 1px solid var(--glass-border); border-radius: 22px; padding: 28px 24px; margin-bottom: 18px; max-height: 56vh; overflow-y: auto; }
+    .rp-ref { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 18px; text-transform: uppercase; letter-spacing: .06em; }
+    .rp-ref::before { content: ""; width: 18px; height: 1.5px; background: var(--gold); border-radius: 2px; opacity: .6; }
+    .rp-verse { display: flex; gap: 12px; margin-bottom: 14px; line-height: 1.75; }
+    .rp-verse-num { flex-shrink: 0; font-size: 10.5px; font-weight: 700; color: var(--gold); padding-top: 5px; min-width: 20px; text-align: right; opacity: .8; }
+    .rp-verse-text { font-size: 16px; color: var(--ink); font-family: var(--serif, Georgia, serif); }
 
-    .rp-loading { text-align: center; padding: 48px; color: var(--muted); font-size: 14px; }
+    .rp-loading { text-align: center; padding: 48px 20px; color: var(--muted); font-size: 14px; }
+    .rp-unavailable { text-align: center; padding: 20px; }
+    .rp-unavailable-icon { font-size: 28px; margin-bottom: 12px; opacity: .6; }
+    .rp-unavailable p { color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 
-    .rp-nav { display: flex; gap: 12px; margin-bottom: 24px; }
-    .rp-nav-btn { flex: 1; padding: 12px; border: 1px solid var(--glass-border); background: rgba(255,255,255,.04); color: var(--ink); font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all .2s; }
+    /* ── Nav buttons ── */
+    .rp-nav { display: flex; gap: 10px; margin-bottom: 16px; }
+    .rp-nav-btn { flex: 1; padding: 14px; border: 1px solid var(--glass-border); background: rgba(255,255,255,.04); color: var(--ink); font-size: 14px; font-weight: 700; border-radius: 14px; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .rp-nav-btn:hover { background: rgba(255,255,255,.08); }
     .rp-nav-btn.primary { background: var(--gold); border-color: var(--gold); color: #2a1d05; }
+    .rp-nav-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-    .rp-tomorrow { padding: 14px 16px; background: rgba(255,255,255,.02); border: 1px solid var(--glass-border); border-radius: 10px; font-size: 13px; color: var(--muted); }
-    .rp-tomorrow strong { color: var(--ink); }
+    /* ── Tomorrow preview ── */
+    .rp-tomorrow { display: flex; align-items: center; gap: 12px; padding: 16px 18px; background: rgba(255,255,255,.03); border: 1px solid var(--glass-border); border-radius: 16px; }
+    .rp-tomorrow-icon { width: 34px; height: 34px; border-radius: 10px; background: rgba(201,161,74,.12); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .rp-tomorrow-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 700; margin-bottom: 2px; }
+    .rp-tomorrow-ref { font-size: 14px; font-weight: 700; color: var(--ink); }
   </style>
 </head>
 <body class="page-scroll">
@@ -61,16 +84,25 @@
     </div>
   </div>
 
-  <div class="container main-with-nav" style="padding-top: 80px; max-width: 680px; margin: 0 auto;">
+  <div class="rp-wrap">
+    <div class="rp-hero">
+      <div class="rp-hero-top">
+        <div class="rp-day-badge" id="dayBadge">Day —</div>
+        <div class="rp-streak"><span class="rp-streak-flame">🔥</span><span id="streakLabel">—</span></div>
+      </div>
 
-    <div class="rp-header">
-      <div class="rp-day-badge" id="dayBadge">Day —</div>
-      <h1 class="rp-title">Daily Scripture</h1>
-      <p class="rp-subtitle">Read through the Bible — one chapter a day</p>
-    </div>
+      <div class="rp-book-row">
+        <div class="rp-book-icon" id="bookIcon">📖</div>
+        <div>
+          <div class="rp-title" id="bookTitle">Daily Scripture</div>
+          <p class="rp-subtitle">Read through the Bible — one chapter a day</p>
+        </div>
+      </div>
 
-    <div class="rp-progress">
-      <div class="rp-progress-fill" id="progressFill" style="width:0%"></div>
+      <div class="rp-progress-row">
+        <div class="rp-progress"><div class="rp-progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="rp-progress-pct" id="progressPct">0%</div>
+      </div>
     </div>
 
     <div class="rp-translation" id="translationPicker">
@@ -86,12 +118,16 @@
     </div>
 
     <div class="rp-nav">
-      <button class="rp-nav-btn" id="prevBtn">Previous</button>
-      <button class="rp-nav-btn primary" id="nextBtn">Next Chapter</button>
+      <button class="rp-nav-btn" id="prevBtn">← Previous</button>
+      <button class="rp-nav-btn primary" id="nextBtn">Next Chapter →</button>
     </div>
 
-    <div class="rp-tomorrow" id="tomorrowBox">
-      Tomorrow: <strong id="tomorrowRef">—</strong>
+    <div class="rp-tomorrow">
+      <div class="rp-tomorrow-icon">✦</div>
+      <div>
+        <div class="rp-tomorrow-label">Tomorrow</div>
+        <div class="rp-tomorrow-ref" id="tomorrowRef">—</div>
+      </div>
     </div>
   </div>
 
@@ -110,39 +146,69 @@
     import { initPageAccount } from "/src/core/pageAccount.js";
     initPageAccount(document.getElementById("accountBtn"));
 
+    const BOOK_ICONS = {
+      Genesis: "🌱", Exodus: "🔥", Psalms: "🎵", Proverbs: "💡",
+      Isaiah: "👁️", Matthew: "👑", John: "❤️", Romans: "✉️", Revelation: "⚡",
+    };
+
     const TRANSLATIONS = ["ESV","NIV","KJV","NLT","NASB"];
     let currentTranslation = localStorage.getItem("rp-translation") || "ESV";
     let currentDay = parseInt(localStorage.getItem("rp-day") || "0") || null;
 
+    async function loadStreak() {
+      try {
+        const res = await fetch("/api/streak", { credentials: "same-origin" });
+        if (!res.ok) return;
+        const data = await res.json();
+        document.getElementById("streakLabel").textContent = `${data.current || 0} day${data.current === 1 ? "" : "s"}`;
+      } catch (_) { /* not logged in — leave placeholder */ }
+    }
+
     async function load(day, translation) {
-      document.getElementById("scripture").innerHTML = `<div class="rp-loading">Loading…</div>`;
+      const scriptureEl = document.getElementById("scripture");
+      scriptureEl.innerHTML = `<div class="rp-loading">Loading…</div>`;
+      const prevBtn = document.getElementById("prevBtn");
+      prevBtn.disabled = true;
+      document.getElementById("nextBtn").disabled = true;
+
       const params = new URLSearchParams({ translation });
       if (day) params.set("day", day);
       const res = await fetch(`/api/reading-plans/daily?${params}`);
       if (!res.ok) {
-        document.getElementById("scripture").innerHTML = `<div class="rp-loading" style="color:var(--muted)">Couldn't load reading. Check your connection.</div>`;
+        scriptureEl.innerHTML = `<div class="rp-loading" style="color:var(--muted)">Couldn't load reading. Check your connection.</div>`;
         return;
       }
       const data = await res.json();
 
-      // Save day
       currentDay = data.day;
       localStorage.setItem("rp-day", currentDay);
 
-      // Update header
+      const pct = (data.day / data.total * 100);
       document.getElementById("dayBadge").textContent = `Day ${data.day} of ${data.total}`;
-      document.getElementById("progressFill").style.width = `${(data.day / data.total * 100).toFixed(1)}%`;
+      document.getElementById("progressFill").style.width = `${pct.toFixed(1)}%`;
+      document.getElementById("progressPct").textContent = `${Math.round(pct)}%`;
       document.getElementById("tomorrowRef").textContent = data.tomorrow.reference;
 
-      // Render verses
+      const bookName = data.today.book || data.today.reference.split(" ").slice(0, -1).join(" ");
+      document.getElementById("bookTitle").textContent = bookName || "Daily Scripture";
+      document.getElementById("bookIcon").textContent = BOOK_ICONS[bookName] || "📖";
+
+      prevBtn.disabled = currentDay <= 1;
+      document.getElementById("nextBtn").disabled = false;
+
       const ref = data.today.reference;
       const verses = data.today.verses;
       if (!verses || verses.length === 0) {
-        document.getElementById("scripture").innerHTML = `<div class="rp-ref">${ref}</div><p style="color:var(--muted);font-size:14px;">Translation not available for this chapter — try ESV or KJV.</p>`;
+        scriptureEl.innerHTML = `
+          <div class="rp-ref">${ref}</div>
+          <div class="rp-unavailable">
+            <div class="rp-unavailable-icon">📜</div>
+            <p>This translation isn't available for ${ref} yet — try <strong style="color:var(--ink)">ESV</strong> or <strong style="color:var(--ink)">KJV</strong>, which have the fullest coverage.</p>
+          </div>`;
         return;
       }
-      document.getElementById("scripture").innerHTML = `
-        <div class="rp-ref">${ref} (${translation})</div>
+      scriptureEl.innerHTML = `
+        <div class="rp-ref">${ref} · ${translation}</div>
         ${verses.map(v => `
           <div class="rp-verse">
             <span class="rp-verse-num">${v.number}</span>
@@ -150,9 +216,9 @@
           </div>
         `).join("")}
       `;
+      scriptureEl.scrollTop = 0;
     }
 
-    // Translation picker
     document.getElementById("translationPicker").querySelectorAll(".rp-trans-btn").forEach(btn => {
       if (btn.dataset.t === currentTranslation) btn.classList.add("active");
       else btn.classList.remove("active");
@@ -172,8 +238,8 @@
       if (currentDay > 1) load(currentDay - 1, currentTranslation);
     });
 
-    // Initial load
     load(currentDay, currentTranslation);
+    loadStreak();
   </script>
 </body>
 </html>
