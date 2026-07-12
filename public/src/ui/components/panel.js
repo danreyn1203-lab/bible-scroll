@@ -1,6 +1,7 @@
 import { entitiesOf } from "../../data/graph.js";
 import { suggestCrossReferences, explainHistory, generateStudyPlan, generateQuiz, generateDevotional, PremiumRequiredError, AIComingSoonError } from "../../core/ai/aiClient.js";
 import { continueLearning, flagStubInterest } from "../../core/discoveryEngine.js";
+import { openMannaCard } from "./mannaCard.js";
 import { recordSignal } from "../../core/engine.js";
 import { state } from "../../core/state.js";
 import { toast } from "./toast.js";
@@ -76,7 +77,7 @@ export async function openExplorePanel(contentId, onJump) {
 
     ${continueHTML ? `<h4>Continue learning</h4>${continueHTML}` : ""}
     <h4>Topics on this card</h4>
-    <p style="font-size:11px;color:var(--muted);margin:-8px 0 8px;">Tap a topic to get an AI explanation</p>
+    <p style="font-size:11px;color:var(--muted);margin:-8px 0 8px;">Tap a topic to open its Manna card</p>
     <div class="tag-row">${entityChips}</div>
     <h4>Related</h4>
     <div class="related-list" id="panel-related"><span style="color:var(--muted);font-size:13px;">Loading…</span></div>
@@ -163,18 +164,7 @@ export async function openExplorePanel(contentId, onJump) {
     btn.onclick = () => { closePanel(); onJump?.(btn.dataset.jumpContent); };
   });
   el.querySelectorAll("[data-jump-entity]").forEach(btn => {
-    btn.onclick = async () => {
-      if (btn.disabled) return;
-      btn.disabled = true;
-      btn.textContent = "Loading…";
-      try {
-        const summary = await explainHistory(btn.dataset.jumpEntity);
-        btn.insertAdjacentHTML("afterend", `<div class="entity-summary">${summary}</div>`);
-      } catch (_) {
-        btn.insertAdjacentHTML("afterend", `<div class="entity-summary" style="color:var(--muted)">Couldn't load — try again.</div>`);
-      }
-      btn.disabled = false;
-    };
+    btn.onclick = () => { closePanel(); openMannaCard(btn.dataset.jumpEntity, { onJump }); };
   });
   el.querySelectorAll("[data-continue-ref]").forEach(btn => {
     btn.onclick = async () => {
@@ -185,10 +175,8 @@ export async function openExplorePanel(contentId, onJump) {
         onJump?.(ref);
       } else if (kind === "entity") {
         recordSignal(contentId, "reveal", 0.5); // soft signal: curiosity about an adjacent topic
-        if (btn.disabled) return;
-        btn.disabled = true;
-        const summary = await explainHistory(ref);
-        btn.insertAdjacentHTML("afterend", `<div class="entity-summary">${summary}</div>`);
+        closePanel();
+        openMannaCard(ref, { onJump });
       } else {
         flagStubInterest(ref);
         state.update("stubInterest", {}, m => ({ ...m, [ref]: (m[ref] || 0) + 1 }));

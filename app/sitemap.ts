@@ -1,6 +1,10 @@
 import { MetadataRoute } from "next";
 import { prisma } from "../lib/prisma";
 
+// Generate at request time, not build time — this queries the database, which
+// isn't reachable during Cloudflare's build step.
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.APP_URL || "http://localhost:8943";
 

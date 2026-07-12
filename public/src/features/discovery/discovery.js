@@ -7,7 +7,7 @@ export function openDiscovery(contentId, feedEl) {
   openExplorePanel(contentId, jumpId => jumpToContent(jumpId, feedEl));
 }
 
-function jumpToContent(jumpId, feedEl) {
+async function jumpToContent(jumpId, feedEl) {
   const existing = feedEl.querySelector(`[data-id="${jumpId}"]`);
   if (existing) {
     existing.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -15,6 +15,6 @@ function jumpToContent(jumpId, feedEl) {
   }
   const item = contentIndex.get(jumpId);
   if (!item) return;
-  feedEl.insertAdjacentHTML("afterbegin", cardHTML(item));
+  feedEl.insertAdjacentHTML("afterbegin", await cardHTML(item));
   feedEl.firstElementChild.scrollIntoView({ behavior: "smooth", block: "start" });
 }

@@ -13,6 +13,7 @@ import { chipsHTML } from "./components/chips.js";
 import { ICONS } from "./components/icons.js";
 import { startDwellTracking, markReflected } from "../core/telemetry.js";
 import { cyclePreferredTranslation } from "../core/aiProfile.js";
+import { deleteUserFact } from "../core/userFacts.js";
 import { toggleLike as apiToggleLike, toggleSave as apiToggleSave, postComment as apiPostComment, getComments as apiGetComments } from "../core/apiClient.js";
 
 const feedEl = document.getElementById("feed");
@@ -243,7 +244,15 @@ export async function initRender() {
     if (nearEnd) await appendBatch(feedEl);
   });
 
-  feedEl.addEventListener("click", e => {
+  feedEl.addEventListener("click", async e => {
+    const delFact = e.target.closest("[data-del-fact]");
+    if (delFact) {
+      e.stopPropagation();
+      deleteUserFact(delFact.dataset.delFact);
+      await buildFeed(feedEl);
+      toast("Fact removed");
+      return;
+    }
     const translationBtn = e.target.closest("[data-cycle-translation]");
     if (translationBtn) {
       const next = cyclePreferredTranslation();
@@ -289,7 +298,7 @@ export async function initRender() {
 
   let lastTap = 0;
   feedEl.addEventListener("click", e => {
-    if (e.target.closest("[data-act]") || e.target.closest("[data-reveal]") || e.target.closest("[data-react]")) return;
+    if (e.target.closest("[data-act]") || e.target.closest("[data-reveal]") || e.target.closest("[data-react]") || e.target.closest("[data-del-fact]")) return;
     const now = Date.now();
     if (now - lastTap < 320) {
       const card = e.target.closest(".card");
