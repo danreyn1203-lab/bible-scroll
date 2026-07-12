@@ -857,6 +857,21 @@ img.search-avatar{padding:0}
 .onboarding-field input:focus,.onboarding-field select:focus{border-color:var(--gold)}
 .onboarding-church-suggest{background:rgba(201,161,74,.08);border:1px solid rgba(201,161,74,.2);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--ink)}
 .onboarding-church-suggest a{color:var(--gold);font-weight:600;text-decoration:none}
+.ob-church-intro{margin:0 0 8px}
+.ob-church-search{display:flex;gap:8px}
+.ob-church-search input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);border-radius:8px;padding:9px 11px;color:var(--ink);font-size:13px;outline:none;font-family:inherit}
+.ob-church-search input:focus{border-color:var(--gold)}
+.ob-church-search button{background:var(--gold);color:#2a1d05;border:none;border-radius:8px;padding:0 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.ob-church-search button:disabled{opacity:.6;cursor:default}
+.ob-church-results{margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:230px;overflow-y:auto}
+.ob-church-status{margin:0;font-size:12px;color:var(--muted)}
+.ob-church-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:8px;padding:8px 10px;text-decoration:none;color:var(--ink)}
+.ob-church-item:hover{border-color:var(--gold);background:rgba(255,255,255,.06)}
+.ob-church-item-main{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ob-church-name{font-weight:600;font-size:13px}
+.ob-church-match{color:var(--gold);font-size:11px;font-weight:600}
+.ob-church-meta{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ob-church-go{color:var(--gold);font-size:12px;font-weight:600;white-space:nowrap}
 .onboarding-privacy{font-size:11px;color:var(--muted);margin:0;line-height:1.4}
 
 /* Friend suggestions carousel */

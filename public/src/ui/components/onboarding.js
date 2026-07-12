@@ -2,6 +2,11 @@
 // database and saves the user's choices via the /api/interests endpoint.
 // This drives personalized feed ordering.
 
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
 export async function showOnboarding(onDone) {
   const el = document.getElementById("welcome");
   if (!el) { onDone?.(); return; }
@@ -81,7 +86,12 @@ export async function showOnboarding(onDone) {
             </label>
           </div>
           <div class="onboarding-church-suggest" id="ob-church-suggest" hidden>
-            <p>🕊️ Looking for a community to grow with? Visiting a nearby church is a great first step. <a id="ob-church-link" href="https://www.churchfinder.com" target="_blank" rel="noopener">Find a church near you →</a></p>
+            <p class="ob-church-intro">🕊️ Looking for a community to grow with? Enter your postal code and we'll find churches near you.</p>
+            <div class="ob-church-search">
+              <input type="text" id="ob-postal" placeholder="Postal / ZIP code" maxlength="12" autocomplete="postal-code" />
+              <button type="button" id="ob-church-find">Find churches</button>
+            </div>
+            <div class="ob-church-results" id="ob-church-results" hidden></div>
           </div>
           <p class="onboarding-privacy">We use this to recommend content. It's never sold or shared. You can edit or remove it anytime in your account.</p>
         </div>
@@ -91,22 +101,63 @@ export async function showOnboarding(onDone) {
     </div>
   `;
 
+  // Show the church finder only when the user isn't currently attending one.
   function refreshChurchSuggestion() {
     const attends = el.querySelector("#ob-attends").value;
-    const city = el.querySelector("#ob-city").value.trim();
-    const box = el.querySelector("#ob-church-suggest");
-    box.hidden = attends !== "no";
-    const link = el.querySelector("#ob-church-link");
-    if (city) {
-      link.href = `https://www.google.com/search?q=${encodeURIComponent("churches near " + city)}`;
-      link.textContent = `Find a church near ${city} →`;
-    } else {
-      link.href = "https://www.churchfinder.com";
-      link.textContent = "Find a church near you →";
-    }
+    el.querySelector("#ob-church-suggest").hidden = attends !== "no";
   }
   el.querySelector("#ob-attends").addEventListener("change", refreshChurchSuggestion);
-  el.querySelector("#ob-city").addEventListener("input", refreshChurchSuggestion);
+
+  // Church finder — geocodes the postal code and lists nearby churches,
+  // ranked so ones matching the user's tradition come first.
+  const findBtn = el.querySelector("#ob-church-find");
+  const postalInput = el.querySelector("#ob-postal");
+  const resultsBox = el.querySelector("#ob-church-results");
+
+  async function findChurches() {
+    const postal = postalInput.value.trim();
+    if (!postal) { postalInput.focus(); return; }
+    findBtn.disabled = true;
+    findBtn.textContent = "Searching…";
+    resultsBox.hidden = false;
+    resultsBox.innerHTML = `<p class="ob-church-status">Looking for churches near ${escapeHtml(postal)}…</p>`;
+
+    const params = new URLSearchParams({ postal });
+    const city = el.querySelector("#ob-city").value.trim();
+    const denom = el.querySelector("#ob-denomination").value;
+    if (city) params.set("city", city);
+    if (denom) params.set("denomination", denom);
+
+    try {
+      const res = await fetch(`/api/churches?${params.toString()}`);
+      const data = await res.json();
+      if (!res.ok) {
+        resultsBox.innerHTML = `<p class="ob-church-status">${escapeHtml(data.error || "Something went wrong. Please try again.")}</p>`;
+        return;
+      }
+      if (!data.churches.length) {
+        resultsBox.innerHTML = `<p class="ob-church-status">No churches found within ~5 miles. Try a nearby postal code.</p>`;
+        return;
+      }
+      resultsBox.innerHTML = data.churches.map(c => `
+        <a class="ob-church-item" href="${escapeHtml(c.mapUrl)}" target="_blank" rel="noopener">
+          <div class="ob-church-item-main">
+            <span class="ob-church-name">${escapeHtml(c.name)}${c.matches ? ` <span class="ob-church-match">✓ ${escapeHtml(denom)}</span>` : ""}</span>
+            <span class="ob-church-meta">${escapeHtml(c.denomination)} · ${c.distanceKm} km away${c.address ? " · " + escapeHtml(c.address) : ""}</span>
+          </div>
+          <span class="ob-church-go">View →</span>
+        </a>
+      `).join("");
+    } catch {
+      resultsBox.innerHTML = `<p class="ob-church-status">Couldn't reach the church finder. Please try again.</p>`;
+    } finally {
+      findBtn.disabled = false;
+      findBtn.textContent = "Find churches";
+    }
+  }
+
+  findBtn.addEventListener("click", findChurches);
+  postalInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); findChurches(); } });
 
   const selected = new Set();
   const doneBtn = el.querySelector("#onboarding-done");
