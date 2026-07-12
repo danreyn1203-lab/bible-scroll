@@ -7,9 +7,10 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "cf:build": "opennextjs-cloudflare build",
-    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "postinstall": "prisma generate",
+    "cf:build": "prisma generate && opennextjs-cloudflare build",
+    "cf:preview": "prisma generate && opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "prisma generate && opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

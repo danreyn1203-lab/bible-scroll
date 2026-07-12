@@ -4,6 +4,7 @@ import { nextBatch } from "../../core/engine.js";
 import { cardHTML, wireCardActions } from "../../ui/components/card.js";
 import { todaysCard } from "../../core/retention.js";
 import { getStats, getComments, getUserState } from "../../core/apiClient.js";
+import { getUserFacts } from "../../core/userFacts.js";
 
 const BATCH_SIZE = 8;
 let activeFilter = "all";
@@ -12,10 +13,26 @@ let shownTodayCard = false;
 export function setFilter(filter) { activeFilter = filter; shownTodayCard = false; }
 export function getFilter() { return activeFilter; }
 
-export function buildFeed(feedEl) {
+// Render the user's own facts (pinned to the top), each with a small delete control.
+async function userFactsHTML() {
+  const facts = getUserFacts().filter(f => activeFilter === "all" || f.c === activeFilter);
+  if (!facts.length) return "";
+  const cards = await Promise.all(facts.map(f =>
+    cardHTML(f, { realData: { stats: { likes: 0, saves: 0, comments: 0 }, comments: [], isLiked: false, isSaved: false } })
+  ));
+  // Inject a "Your fact" pill into each card's kicker row (sits beside the
+  // category badge — flows with the card, never overlaps the filters or rail).
+  return cards.map((html, i) =>
+    html.replace('<div class="kicker-row">',
+      `<div class="kicker-row"><button class="user-fact-del" data-del-fact="${facts[i].id}" title="Tap to remove your fact" aria-label="Remove your fact">Your fact</button>`)
+  ).join("");
+}
+
+export async function buildFeed(feedEl) {
   feedEl.innerHTML = "";
   shownTodayCard = false;
-  appendBatch(feedEl);
+  feedEl.insertAdjacentHTML("beforeend", await userFactsHTML());
+  await appendBatch(feedEl);
   feedEl.scrollTop = 0;
 }
 

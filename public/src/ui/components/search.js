@@ -2,6 +2,9 @@
 // Triggered from the top-bar 🔍 button. Closes on Escape or backdrop click.
 
 import { toast } from "./toast.js";
+import { openMannaCard } from "./mannaCard.js";
+import { contentIndex } from "../../data/graph.js";
+import { cardHTML } from "./card.js";
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -123,12 +126,38 @@ function renderResults(root, data, close) {
   }
   root.innerHTML = sections.join("");
   root.querySelectorAll(".search-result").forEach(el => {
-    el.addEventListener("click", () => {
+    el.addEventListener("click", async () => {
       const kind = el.dataset.kind;
       const id = el.dataset.id;
-      if (kind === "user") window.open(`/api/users/${id}`, "_blank");
-      // For posts/content/entities we'd jump to the item; for now just close.
-      close();
+      if (kind === "entity") {
+        close();
+        openMannaCard(id);
+      } else if (kind === "content") {
+        close();
+        await jumpToContent(id);
+      } else if (kind === "user") {
+        close();
+        window.location.href = `/profile.html?id=${encodeURIComponent(id)}`;
+      } else {
+        // posts — send to the community feed
+        close();
+        window.location.href = `/index.html`;
+      }
     });
   });
+}
+
+// Scroll to a verse/card in the feed; render it in if it isn't loaded yet.
+async function jumpToContent(id) {
+  const feed = document.getElementById("feed");
+  if (!feed) { window.location.href = "/index.html"; return; }
+  let node = feed.querySelector(`[data-id="${(window.CSS?.escape ? CSS.escape(id) : id)}"]`);
+  if (!node) {
+    const item = contentIndex.get(id);
+    if (item) {
+      feed.insertAdjacentHTML("afterbegin", await cardHTML(item));
+      node = feed.firstElementChild;
+    }
+  }
+  if (node) node.scrollIntoView({ behavior: "smooth", block: "start" });
 }
