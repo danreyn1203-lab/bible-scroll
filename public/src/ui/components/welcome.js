@@ -8,6 +8,27 @@ import { showOnboarding } from "./onboarding.js";
 let onAuthChange = null;
 export function setAuthChangeHandler(fn) { onAuthChange = fn; }
 
+const EYE_SVG = `<svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>`;
+const EYE_OFF_SVG = `<svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M3 3l18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M10.6 6.3A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17.9 17.9 0 0 1-3.4 4.1M6.6 6.7C3.8 8.4 2 12 2 12s3.6 7 10 7c1.6 0 3-.3 4.3-.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+
+// Simple, transparent strength score → one of four labels + a fill %.
+function scorePassword(pw) {
+  if (!pw) return { pct: 0, text: "Password strength", cls: "" };
+  if (pw.length < 8) return { pct: 18, text: "Too short (8+ characters)", cls: "s-weak" };
+  let score = 1;
+  if (pw.length >= 12) score++;
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+  if (/\d/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const levels = [
+    { pct: 30, text: "Weak", cls: "s-weak" },
+    { pct: 55, text: "Fair", cls: "s-fair" },
+    { pct: 80, text: "Good", cls: "s-good" },
+    { pct: 100, text: "Strong", cls: "s-strong" },
+  ];
+  return levels[Math.min(levels.length - 1, score - 1)];
+}
+
 export async function maybeAutoOpen() {
   // ?auth=login means the user just signed out — force login panel, not dismissible
   const param = new URLSearchParams(window.location.search).get("auth");
@@ -66,7 +87,14 @@ function render(el, mode, dismissible, ctx) {
       <form id="welcome-form" class="welcome-form">
         ${isSignup ? `<input type="text" name="name" placeholder="Your name (optional)" autocomplete="name" />` : ""}
         <input type="email" name="email" placeholder="Email" required autocomplete="email" />
-        <input type="password" name="password" placeholder="Password (8+ characters)" required minlength="8" autocomplete="${isSignup ? "new-password" : "current-password"}" />
+        <div class="welcome-pw">
+          <input type="password" name="password" id="welcome-password" placeholder="Password (8+ characters)" required minlength="8" autocomplete="${isSignup ? "new-password" : "current-password"}" />
+          <button type="button" class="welcome-pw-toggle" data-pw-toggle aria-label="Show password">${EYE_SVG}</button>
+        </div>
+        ${isSignup ? `<div class="welcome-strength" id="welcome-strength">
+          <div class="welcome-strength-track"><div class="welcome-strength-fill" id="welcome-strength-fill"></div></div>
+          <span class="welcome-strength-label" id="welcome-strength-label">Password strength</span>
+        </div>` : ""}
         <button type="submit" class="welcome-cta">${isSignup ? "Create account & begin reading" : "Log in"}</button>
       </form>
       <p class="welcome-error" id="welcome-error" hidden></p>
@@ -100,6 +128,31 @@ function render(el, mode, dismissible, ctx) {
     btn.addEventListener("click", () => render(el, btn.dataset.go, dismissible, ctx));
   });
   el.querySelector("#welcome-skip")?.addEventListener("click", () => { state.set("welcomeDismissed", true); close(); });
+
+  // Show/hide password toggle (eye)
+  const pwInput = el.querySelector("#welcome-password");
+  const pwToggle = el.querySelector("[data-pw-toggle]");
+  pwToggle?.addEventListener("click", () => {
+    const reveal = pwInput.type === "password";
+    pwInput.type = reveal ? "text" : "password";
+    pwToggle.innerHTML = reveal ? EYE_OFF_SVG : EYE_SVG;
+    pwToggle.setAttribute("aria-label", reveal ? "Hide password" : "Show password");
+    pwInput.focus();
+  });
+
+  // Live password-strength meter (signup only)
+  const strengthWrap = el.querySelector("#welcome-strength");
+  if (strengthWrap && pwInput) {
+    const fill = el.querySelector("#welcome-strength-fill");
+    const label = el.querySelector("#welcome-strength-label");
+    pwInput.addEventListener("input", () => {
+      const s = scorePassword(pwInput.value);
+      strengthWrap.classList.toggle("show", pwInput.value.length > 0);
+      fill.style.width = s.pct + "%";
+      fill.className = "welcome-strength-fill " + s.cls;
+      label.textContent = s.text;
+    });
+  }
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
