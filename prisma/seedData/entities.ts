@@ -39,6 +39,11 @@ export const ENTITIES = [
   {id:"book.numbers", type:"book", label:"Numbers", summary:"Israel's wilderness wanderings between Sinai and the edge of Canaan."},
   {id:"book.joshua", type:"book", label:"Joshua", summary:"The conquest and settlement of the promised land."},
   {id:"book.2kings", type:"book", label:"2 Kings", summary:"The divided kingdom's decline, ending in exile."},
+  {id:"book.1kings", type:"book", label:"1 Kings", summary:"Solomon's glory, the kingdom's split, and the ministry of Elijah."},
+  {id:"person.elijah", type:"person", label:"Elijah", summary:"Fiery prophet who confronted Baal worship and was taken up in a whirlwind."},
+  {id:"person.elisha", type:"person", label:"Elisha", summary:"Elijah's successor, who inherited a double portion of his spirit and worked many miracles."},
+  {id:"person.ahab", type:"person", label:"Ahab", summary:"Idolatrous king of the northern kingdom, opposed by the prophet Elijah."},
+  {id:"place.carmel", type:"place", label:"Mount Carmel", summary:"The mountain ridge where Elijah faced down the prophets of Baal and fire fell from heaven."},
   {id:"book.1samuel", type:"book", label:"1 Samuel", summary:"Israel's transition from judges to monarchy — Saul and the rise of David."},
   {id:"book.esther", type:"book", label:"Esther", summary:"A Jewish queen's courage saves her people in Persia — God unnamed, providence everywhere."},
 

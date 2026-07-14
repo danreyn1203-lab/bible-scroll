@@ -107,11 +107,13 @@ async function toggleLike(card, id) {
   act.dataset.pending = "1";
   try {
     const res = await apiToggleLike(id);
-    if (!res) return;
+    if (!res) { toast("Couldn't update your like — please try again"); return; }
     act.classList.toggle("on", res.liked);
     act.querySelector(".ic").innerHTML = res.liked ? ICONS.heartFilled : ICONS.heartOutline;
     act.querySelector("[data-likect]").textContent = res.count ?? 0;
     if (res.liked) { recordSignal(id, "like"); analytics("like", { id }); engage(); }
+  } catch {
+    toast("Couldn't update your like — please try again");
   } finally {
     delete act.dataset.pending;
   }
@@ -123,12 +125,14 @@ async function toggleSave(card, id) {
   act.dataset.pending = "1";
   try {
     const res = await apiToggleSave(id);
-    if (!res) return;
+    if (!res) { toast("Couldn't update your save — please try again"); return; }
     act.classList.toggle("saved", res.saved);
     act.querySelector(".ic").innerHTML = res.saved ? ICONS.bookmarkFilled : ICONS.bookmarkOutline;
     act.querySelector("[data-savect]").textContent = res.count ?? 0;
     if (res.saved) { toast("Saved ✦"); recordSignal(id, "save"); analytics("save", { id }); engage(); }
     else toast("Removed from Saved");
+  } catch {
+    toast("Couldn't update your save — please try again");
   } finally {
     delete act.dataset.pending;
   }
